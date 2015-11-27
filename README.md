@@ -49,26 +49,26 @@ The array is searched backwards, starting at fromIndex.
 **Example**  
 ```js
 var lastIndexOf = require('last-index-of-x');
-var subject = [2, 3, undefined, true, 'hej', null, 2, false, 0, -0, NaN];
+var subject = [NaN, 2, 3, undefined, true, 'hej', null, 2, false, 0, -0];
 
 // Standard mode, operates just like `Array.prototype.lastIndexOf`.
-lastIndexOf(subject, null); // 5
+lastIndexOf(subject, null); // 6
 lastIndexOf(testSubject, '2'); // -1
 lastIndexOf(testSubject, NaN); // -1
-lastIndexOf(testSubject, -0); // 8
-lastIndexOf(testSubject, 2, 2); //6
+lastIndexOf(testSubject, 0); // 10
+lastIndexOf(testSubject, 2, -6); // 1
 
 // `SameValueZero` mode extends `lastIndexOf` to match `NaN`.
-lastIndexOf(subject, null, 'SameValueZero'); // 5
+lastIndexOf(subject, null, 'SameValueZero'); // 6
 lastIndexOf(testSubject, '2', 'SameValueZero'); // -1
-lastIndexOf(testSubject, NaN, 'SameValueZero'); // 10
-lastIndexOf(testSubject, -0, 'SameValueZero'); // 8
-lastIndexOf(testSubject, 2, 2, 'SameValueZero'); //6
+lastIndexOf(testSubject, NaN, 'SameValueZero'); // 0
+lastIndexOf(testSubject, 0, 'SameValueZero'); // 10
+lastIndexOf(testSubject, 2, -6, 'SameValueZero'); // 1
 
 // `SameValue` mode extends `lastIndexOf` to match `NaN` and signed `0`.
-lastIndexOf(subject, null, 'SameValue'); // 5
+lastIndexOf(subject, null, 'SameValue'); // 6
 lastIndexOf(testSubject, '2', 'SameValue'); // -1
-lastIndexOf(testSubject, NaN, 'SameValue'); // 10
-lastIndexOf(testSubject, -0, 'SameValue'); // 9
-lastIndexOf(testSubject, 2, 2, 'SameValue'); //6
+lastIndexOf(testSubject, NaN, 'SameValue'); // 0
+lastIndexOf(testSubject, 0, 'SameValue'); // 9
+lastIndexOf(testSubject, 2, -6, 'SameValue'); // 1
 ```
