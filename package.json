@@ -1,6 +1,6 @@
 {
     "name": "last-index-of-x",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "An extended ES6 lastIndexOf module.",
     "homepage": "https://github.com/Xotic750/last-index-of-x",
     "author": {
@@ -32,7 +32,7 @@
     "dependencies": {
       "es-abstract": "^1.4.3",
       "is-string": "1.0.4",
-      "find-last-index-x": "^1.0.2"
+      "find-last-index-x": "^1.0.3"
     },
     "devDependencies": {
       "es5-shim": "^4.3.1",

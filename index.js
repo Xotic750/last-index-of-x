@@ -21,7 +21,7 @@
  * </a>
  *
  * An extended ES6 lastIndexOf module.
- * @version 1.0.0
+ * @version 1.0.1
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -41,11 +41,15 @@
 ;(function () {
   'use strict';
 
-  var ES = require('es-abstract/es6'),
-    isString = require('is-string'),
-    findLastIndex = require('find-last-index-x'),
+  var pCharAt = String.prototype.charAt,
+    pPush = Array.prototype.push,
     pLastIndexOf = Array.prototype.lastIndexOf,
-    pSlice = Array.prototype.slice;
+    $min = Math.min,
+    $abs = Math.abs,
+    ES = require('es-abstract/es6'),
+    isString = require('is-string'),
+    findLastIndex = require('find-last-index-x');
+
   /**
    * This method returns the last index at which a given element
    * can be found in the array, or -1 if it is not present.
@@ -62,7 +66,9 @@
     var isStr = isString(object),
       element;
     while (fromIndex >= 0) {
-      element = isStr ? object.charAt(fromIndex) : object[fromIndex];
+      element = isStr ?
+        ES.Call(pCharAt, object, [fromIndex]) :
+        object[fromIndex];
       if (fromIndex in object && extendFn(element, searchElement)) {
         return fromIndex;
       }
@@ -114,7 +120,7 @@
    * lastIndexOf(testSubject, 0, 'SameValue'); // 9
    * lastIndexOf(testSubject, 2, -6, 'SameValue'); // 1
    */
-  module.exports = function (array, searchElement) {
+  module.exports = function lastIndexOf(array, searchElement) {
     var object = ES.ToObject(array),
       length = ES.ToLength(object.length),
       args = [searchElement],
@@ -124,7 +130,7 @@
     }
     if (arguments.length > 2) {
       if (arguments.length > 3) {
-        args.push(arguments[2]);
+        ES.Call(pPush, args, [arguments[2]]);
         extend = arguments[3];
       } else if (isString(arguments[2])) {
         extend = String(arguments[2]);
@@ -142,9 +148,9 @@
         fromIndex = length - 1;
       }
       if (fromIndex >= 0) {
-        fromIndex = Math.min(fromIndex, length - 1);
+        fromIndex = $min(fromIndex, length - 1);
       } else {
-        fromIndex = length - Math.abs(fromIndex);
+        fromIndex = length - $abs(fromIndex);
       }
       if (fromIndex < length - 1) {
         return findLastIndexFrom(object, searchElement, fromIndex, extendFn);
@@ -154,8 +160,8 @@
       });
     }
     if (!extendFn && args.length === 1 && arguments.length === 3) {
-      args.push(arguments[2]);
+      ES.Call(pPush, args, [arguments[2]]);
     }
-    return pLastIndexOf.apply(object, args);
+    return ES.Call(pLastIndexOf, object, args);
   };
 }());
