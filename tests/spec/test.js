@@ -3,10 +3,10 @@
 /*jshint bitwise:true, camelcase:true, curly:true, eqeqeq:true, forin:true,
   freeze:true, futurehostile:true, latedef:true, newcap:true, nocomma:true,
   nonbsp:true, singleGroups:true, strict:true, undef:true, unused:true,
-  es3:true, esnext:true, plusplus:true, maxparams:3, maxdepth:1,
-  maxstatements:12, maxcomplexity:4 */
+  es3:true, esnext:true, plusplus:true, maxparams:3, maxdepth:2,
+  maxstatements:13, maxcomplexity:5 */
 
-/*global expect, module, require, describe, it, xit,  beforeEach,
+/*global JSON:true, expect, module, require, describe, it, xit,  beforeEach,
   returnExports */
 
 (function () {
@@ -26,6 +26,12 @@
 
   if (typeof module === 'object' && module.exports) {
     require('es5-shim');
+    require('es5-shim/es5-sham');
+    if (typeof JSON === 'undefined') {
+      JSON = {};
+    }
+    require('json3').runInContext(null, JSON);
+    require('es6-shim');
     lastIndexOf = require('../../index.js');
   } else {
     lastIndexOf = returnExports;
