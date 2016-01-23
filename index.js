@@ -39,7 +39,7 @@
  * `es6.shim.js` provides compatibility shims so that legacy JavaScript engines
  * behave as closely as possible to ECMAScript 6 (Harmony).
  *
- * @version 1.0.5
+ * @version 1.0.6
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -51,22 +51,28 @@
 /*jshint bitwise:true, camelcase:true, curly:true, eqeqeq:true, forin:true,
   freeze:true, futurehostile:true, latedef:true, newcap:true, nocomma:true,
   nonbsp:true, singleGroups:true, strict:true, undef:true, unused:true,
-  es3:true, esnext:true, plusplus:true, maxparams:4, maxdepth:3,
-  maxstatements:25, maxcomplexity:13 */
+  es3:true, esnext:true, plusplus:true, maxparams:4, maxdepth:2,
+  maxstatements:29, maxcomplexity:13 */
 
 /*global require, module */
 
 ;(function () {
   'use strict';
 
-  var pCharAt = String.prototype.charAt,
-    pPush = Array.prototype.push,
-    pLastIndexOf = Array.prototype.lastIndexOf,
-    $min = Math.min,
-    $abs = Math.abs,
-    ES = require('es-abstract/es6'),
-    isString = require('is-string'),
-    findLastIndex = require('find-last-index-x');
+  var pCharAt = String.prototype.charAt;
+  var pPush = Array.prototype.push;
+  var pLastIndexOf = Array.prototype.lastIndexOf;
+  var $min = Math.min;
+  var $abs = Math.abs;
+  var $isNaN = Number.isNaN;
+  var findLastIndex = require('find-last-index-x');
+  var isString = require('is-string');
+  var toInteger = require('to-integer-x');
+  var toObject = require('to-object-x');
+  var toLength = require('to-length-x');
+  var sameValueZero = require('same-value-zero-x');
+  var safeToString = require('safe-to-string-x');
+  var sameValue = Object.is;
 
   /**
    * This method returns the last index at which a given element
@@ -81,12 +87,9 @@
    * @return {number} Returns index of found element, otherwise -1.
    */
   function findLastIndexFrom(object, searchElement, fromIndex, extendFn) {
-    var isStr = isString(object),
-      element;
+    var isStr = isString(object);
     while (fromIndex >= 0) {
-      element = isStr ?
-        ES.Call(pCharAt, object, [fromIndex]) :
-        object[fromIndex];
+      var element = isStr ? pCharAt.call(object, fromIndex) : object[fromIndex];
       if (fromIndex in object && extendFn(element, searchElement)) {
         return fromIndex;
       }
@@ -139,29 +142,31 @@
    * lastIndexOf(testSubject, 2, -6, 'SameValue'); // 1
    */
   module.exports = function lastIndexOf(array, searchElement) {
-    var object = ES.ToObject(array),
-      length = ES.ToLength(object.length),
-      args = [searchElement],
-      fromIndex, extend, extendFn;
+    var object = toObject(array);
+    var length = toLength(object.length);
     if (!length) {
       return -1;
     }
+    var args = [searchElement];
+    var extend;
     if (arguments.length > 2) {
       if (arguments.length > 3) {
-        ES.Call(pPush, args, [arguments[2]]);
+        pPush.call(args, arguments[2]);
         extend = arguments[3];
       } else if (isString(arguments[2])) {
-        extend = String(arguments[2]);
+        extend = safeToString(arguments[2]);
       }
     }
+    var extendFn;
     if (extend === 'SameValue') {
-      extendFn = ES.SameValue;
+      extendFn = sameValue;
     } else if (extend === 'SameValueZero') {
-      extendFn = ES.SameValueZero;
+      extendFn = sameValueZero;
     }
-    if (extendFn && (searchElement === 0 || searchElement !== searchElement)) {
+    if (extendFn && (searchElement === 0 || $isNaN(searchElement))) {
+      var fromIndex;
       if (arguments.length > 3) {
-        fromIndex = ES.ToInteger(arguments[2]);
+        fromIndex = toInteger(arguments[2]);
       } else {
         fromIndex = length - 1;
       }
@@ -178,8 +183,8 @@
       });
     }
     if (!extendFn && args.length === 1 && arguments.length === 3) {
-      ES.Call(pPush, args, [arguments[2]]);
+      pPush.call(args, arguments[2]);
     }
-    return ES.Call(pLastIndexOf, object, args);
+    return pLastIndexOf.apply(object, args);
   };
 }());
