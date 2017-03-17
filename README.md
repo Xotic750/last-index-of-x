@@ -1,4 +1,5 @@
 <a name="module_last-index-of-x"></a>
+
 ## last-index-of-x
 <a href="https://travis-ci.org/Xotic750/last-index-of-x"
 title="Travis status">
@@ -39,11 +40,12 @@ es5-shim.js to be able to work properly.
 `es6.shim.js` provides compatibility shims so that legacy JavaScript engines
 behave as closely as possible to ECMAScript 6 (Harmony).
 
-**Version**: 1.0.11  
-**Author:** Xotic750 <Xotic750@gmail.com>  
+**Version**: 1.1.0  
+**Author**: Xotic750 <Xotic750@gmail.com>  
 **License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
 **Copyright**: Xotic750  
 <a name="exp_module_last-index-of-x--module.exports"></a>
+
 ### `module.exports(array, searchElement, [fromIndex], [extend])` ⇒ <code>number</code> ⏏
 This method returns the last index at which a given element
 can be found in the array, or -1 if it is not present.
