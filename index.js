@@ -22,39 +22,16 @@
  *
  * An extended ES6 lastIndexOf module.
  *
- * <h2>ECMAScript compatibility shims for legacy JavaScript engines</h2>
- * `es5-shim.js` monkey-patches a JavaScript context to contain all EcmaScript 5
- * methods that can be faithfully emulated with a legacy JavaScript engine.
+ * Requires ES3 or above.
  *
- * `es5-sham.js` monkey-patches other ES5 methods as closely as possible.
- * For these methods, as closely as possible to ES5 is not very close.
- * Many of these shams are intended only to allow code to be written to ES5
- * without causing run-time errors in older engines. In many cases,
- * this means that these shams cause many ES5 methods to silently fail.
- * Decide carefully whether this is what you want. Note: es5-sham.js requires
- * es5-shim.js to be able to work properly.
- *
- * `json3.js` monkey-patches the EcmaScript 5 JSON implimentation faithfully.
- *
- * `es6.shim.js` provides compatibility shims so that legacy JavaScript engines
- * behave as closely as possible to ECMAScript 6 (Harmony).
- *
- * @version 1.1.0
+ * @version 1.2.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
  * @module last-index-of-x
  */
 
-/* jslint maxlen:80, es6:true, white:true */
-
-/* jshint bitwise:true, camelcase:true, curly:true, eqeqeq:true, forin:true,
-   freeze:true, futurehostile:true, latedef:true, newcap:true, nocomma:true,
-   nonbsp:true, singleGroups:true, strict:true, undef:true, unused:true,
-   es3:false, esnext:true, plusplus:true, maxparams:1, maxdepth:1,
-   maxstatements:3, maxcomplexity:2 */
-
-/* eslint strict: 1, max-statements: 1, complexity: 1 */
+/* eslint strict: 1, max-statements: 1, complexity: 1, no-invalid-this: 1 */
 
 /* global require, module */
 
@@ -62,12 +39,7 @@
 
   'use strict';
 
-  var pCharAt = String.prototype.charAt;
-  var pPush = Array.prototype.push;
-  var pLastIndexOf = Array.prototype.lastIndexOf;
-  var $min = Math.min;
-  var $abs = Math.abs;
-  var $isNaN = Number.isNaN;
+  var $isNaN = require('is-nan');
   var findLastIndex = require('find-last-index-x');
   var isString = require('is-string');
   var toInteger = require('to-integer-x');
@@ -75,7 +47,35 @@
   var toLength = require('to-length-x');
   var sameValueZero = require('same-value-zero-x');
   var safeToString = require('safe-to-string-x');
-  var sameValue = Object.is;
+  var sameValue = require('object-is');
+  var pLastIndexOf = Array.prototype.lastIndexOf;
+
+  if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
+    var boxedString = Object('a');
+    var splitString = boxedString[0] !== 'a' || !(0 in boxedString);
+
+    pLastIndexOf = function lastIndexOf(searchElement) {
+      var self = splitString && isString(this) ? this.split('') : toObject(this);
+      var length = self.length >>> 0;
+
+      if (length === 0) {
+        return -1;
+      }
+      var i = length - 1;
+      if (arguments.length > 1) {
+        i = Math.min(i, toInteger(arguments[1]));
+      }
+            // handle negative indices
+      i = i >= 0 ? i : length - Math.abs(i);
+      while (i >= 0) {
+        if (i in self && searchElement === self[i]) {
+          return i;
+        }
+        i -= 1;
+      }
+      return -1;
+    };
+  }
 
   /**
    * This method returns the last index at which a given element
@@ -89,12 +89,12 @@
    * @param {Function} extendFn The comparison function to use.
    * @return {number} Returns index of found element, otherwise -1.
    */
-  var findLastIndexFrom = function (object, searchElement, fromIndex, extendFn) {
+  var findLastIdxFrom = function findLastIndexFrom(object, searchElement, fromIndex, extendFn) {
     var fIdx = fromIndex;
     var isStr = isString(object);
     while (fIdx >= 0) {
       if (fIdx in object) {
-        var element = isStr ? pCharAt.call(object, fIdx) : object[fIdx];
+        var element = isStr ? object.charAt(fIdx) : object[fIdx];
         if (extendFn(element, searchElement)) {
           return fIdx;
         }
@@ -157,7 +157,7 @@
     var extend;
     if (arguments.length > 2) {
       if (arguments.length > 3) {
-        pPush.call(args, arguments[2]);
+        args.push(arguments[2]);
         extend = arguments[3];
       } else if (isString(arguments[2])) {
         extend = safeToString(arguments[2]);
@@ -180,19 +180,19 @@
         fromIndex = length - 1;
       }
       if (fromIndex >= 0) {
-        fromIndex = $min(fromIndex, length - 1);
+        fromIndex = Math.min(fromIndex, length - 1);
       } else {
-        fromIndex = length - $abs(fromIndex);
+        fromIndex = length - Math.abs(fromIndex);
       }
       if (fromIndex < length - 1) {
-        return findLastIndexFrom(object, searchElement, fromIndex, extendFn);
+        return findLastIdxFrom(object, searchElement, fromIndex, extendFn);
       }
       return findLastIndex(object, function (element, index) {
         return index in object && extendFn(searchElement, element);
       });
     }
     if (!extendFn && args.length === 1 && arguments.length === 3) {
-      pPush.call(args, arguments[2]);
+      args.push(arguments[2]);
     }
     return pLastIndexOf.apply(object, args);
   };
