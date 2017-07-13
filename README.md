@@ -1,31 +1,29 @@
-<a name="module_last-index-of-x"></a>
-
-## last-index-of-x
 <a href="https://travis-ci.org/Xotic750/last-index-of-x"
-title="Travis status">
-<img src="https://travis-ci.org/Xotic750/last-index-of-x.svg?branch=master"
-alt="Travis status" height="18">
+   title="Travis status">
+<img
+   src="https://travis-ci.org/Xotic750/last-index-of-x.svg?branch=master"
+   alt="Travis status" height="18"/>
 </a>
 <a href="https://david-dm.org/Xotic750/last-index-of-x"
-title="Dependency status">
+   title="Dependency status">
 <img src="https://david-dm.org/Xotic750/last-index-of-x.svg"
-alt="Dependency status" height="18"/>
+   alt="Dependency status" height="18"/>
 </a>
 <a href="https://david-dm.org/Xotic750/last-index-of-x#info=devDependencies"
-title="devDependency status">
+   title="devDependency status">
 <img src="https://david-dm.org/Xotic750/last-index-of-x/dev-status.svg"
-alt="devDependency status" height="18"/>
+   alt="devDependency status" height="18"/>
 </a>
 <a href="https://badge.fury.io/js/last-index-of-x" title="npm version">
 <img src="https://badge.fury.io/js/last-index-of-x.svg"
-alt="npm version" height="18">
+   alt="npm version" height="18"/>
 </a>
+<a name="module_last-index-of-x"></a>
 
-An extended ES6 lastIndexOf module.
+## last-index-of-x
+An extended ES6 lastIndexOf.
 
-Requires ES3 or above.
-
-**Version**: 1.3.0  
+**Version**: 1.4.0  
 **Author**: Xotic750 <Xotic750@gmail.com>  
 **License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
 **Copyright**: Xotic750  
@@ -47,7 +45,7 @@ The array is searched backwards, starting at fromIndex.
 | --- | --- | --- |
 | array | <code>Array</code> | The array to search. |
 | searchElement | <code>\*</code> | Element to locate in the `array`. |
-| [fromIndex] | <code>number</code> | The index at which to start searching  backwards. Defaults to the array's length minus one, i.e. the whole array  will be searched. If the index is greater than or equal to the length of  the array, the whole array will be searched. If negative, it is taken as  the offset from the end of the array. Note that even when the index is  negative, the array is still searched from back to front. If the  calculated index is less than 0, -1 is returned, i.e. the array will not  be searched |
+| [fromIndex] | <code>number</code> | The index at which to start searching  backwards. Defaults to the array's length minus one, i.e. the whole array  will be searched. If the index is greater than or equal to the length of  the array, the whole array will be searched. If negative, it is taken as  the offset from the end of the array. Note that even when the index is  negative, the array is still searched from back to front. If the  calculated index is less than 0, -1 is returned, i.e. the array will not  be searched. |
 | [extend] | <code>string</code> | Extension type: `SameValue` or `SameValueZero`. |
 
 **Example**  
