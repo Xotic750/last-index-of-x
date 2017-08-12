@@ -1,6 +1,6 @@
 /**
  * @file An extended ES6 lastIndexOf.
- * @version 1.5.0
+ * @version 1.6.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -21,13 +21,12 @@ var sameValue = require('object-is');
 var pLastIndexOf = Array.prototype.lastIndexOf;
 
 if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
-  var boxedString = Object('a');
-  var splitString = boxedString[0] !== 'a' || !(0 in boxedString);
+  var splitString = require('has-boxed-string-x') === false;
 
   pLastIndexOf = function lastIndexOf(searchElement) {
     // eslint-disable-next-line no-invalid-this
-    var self = splitString && isString(this) ? this.split('') : toObject(this);
-    var length = toLength(self.length);
+    var iterable = splitString && isString(this) ? this.split('') : toObject(this);
+    var length = toLength(iterable.length);
 
     if (length === 0) {
       return -1;
@@ -41,7 +40,7 @@ if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
     // handle negative indices
     i = i >= 0 ? i : length - Math.abs(i);
     while (i >= 0) {
-      if (i in self && searchElement === self[i]) {
+      if (i in iterable && searchElement === iterable[i]) {
         return i;
       }
 
@@ -67,13 +66,10 @@ if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
 // eslint-disable-next-line max-params
 var findLastIdxFrom = function findLastIndexFrom(object, searchElement, fromIndex, extendFn) {
   var fIdx = fromIndex;
-  var isStr = isString(object);
+  var iterable = splitString && isString(object) ? object.split('') : object;
   while (fIdx >= 0) {
-    if (fIdx in object) {
-      var element = isStr ? object.charAt(fIdx) : object[fIdx];
-      if (extendFn(element, searchElement)) {
-        return fIdx;
-      }
+    if (fIdx in object && extendFn(iterable[fIdx], searchElement)) {
+      return fIdx;
     }
 
     fIdx -= 1;
@@ -136,7 +132,7 @@ module.exports = function lastIndexOf(array, searchElement) {
   var extend;
   if (arguments.length > 2) {
     if (arguments.length > 3) {
-      args.push(arguments[2]);
+      args[1] = arguments[2];
       extend = arguments[3];
     } else if (isString(arguments[2])) {
       extend = safeToString(arguments[2]);
@@ -176,8 +172,8 @@ module.exports = function lastIndexOf(array, searchElement) {
     });
   }
 
-  if (Boolean(extendFn) === false && args.length === 1 && arguments.length === 3) {
-    args.push(arguments[2]);
+  if (Boolean(extendFn) === false && args.length === 1 && arguments.length > 2) {
+    args[1] = arguments[2];
   }
 
   return pLastIndexOf.apply(object, args);
