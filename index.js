@@ -1,6 +1,6 @@
 /**
  * @file An extended ES6 lastIndexOf.
- * @version 1.7.0
+ * @version 1.8.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -24,8 +24,7 @@ var pLastIndexOf = Array.prototype.lastIndexOf;
 if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
   pLastIndexOf = function lastIndexOf(searchElement) {
     // eslint-disable-next-line no-invalid-this
-    var iterable = splitString && isString(this) ? this.split('') : toObject(this);
-    var length = toLength(iterable.length);
+    var length = toLength(this.length);
 
     if (length === 0) {
       return -1;
@@ -39,7 +38,8 @@ if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
     // handle negative indices
     i = i >= 0 ? i : length - Math.abs(i);
     while (i >= 0) {
-      if (i in iterable && searchElement === iterable[i]) {
+      // eslint-disable-next-line no-invalid-this
+      if (i in this && searchElement === this[i]) {
         return i;
       }
 
@@ -65,9 +65,8 @@ if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
 // eslint-disable-next-line max-params
 var findLastIdxFrom = function findLastIndexFrom(object, searchElement, fromIndex, extendFn) {
   var fIdx = fromIndex;
-  var iterable = splitString && isString(object) ? object.split('') : object;
   while (fIdx >= 0) {
-    if (fIdx in object && extendFn(iterable[fIdx], searchElement)) {
+    if (fIdx in object && extendFn(object[fIdx], searchElement)) {
       return fIdx;
     }
 
@@ -122,7 +121,8 @@ var findLastIdxFrom = function findLastIndexFrom(object, searchElement, fromInde
  */
 module.exports = function lastIndexOf(array, searchElement) {
   var object = toObject(array);
-  var length = toLength(object.length);
+  var iterable = splitString && isString(object) ? object.split('') : object;
+  var length = toLength(iterable.length);
   if (length < 1) {
     return -1;
   }
@@ -163,11 +163,11 @@ module.exports = function lastIndexOf(array, searchElement) {
     }
 
     if (fromIndex < length - 1) {
-      return findLastIdxFrom(object, searchElement, fromIndex, extendFn);
+      return findLastIdxFrom(iterable, searchElement, fromIndex, extendFn);
     }
 
-    return findLastIndex(object, function (element, index) {
-      return index in object && extendFn(searchElement, element);
+    return findLastIndex(iterable, function (element, index) {
+      return index in iterable && extendFn(searchElement, element);
     });
   }
 
@@ -175,5 +175,5 @@ module.exports = function lastIndexOf(array, searchElement) {
     args[1] = arguments[2];
   }
 
-  return pLastIndexOf.apply(object, args);
+  return pLastIndexOf.apply(iterable, args);
 };
