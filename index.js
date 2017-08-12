@@ -1,6 +1,6 @@
 /**
  * @file An extended ES6 lastIndexOf.
- * @version 1.6.0
+ * @version 1.7.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -18,11 +18,10 @@ var toLength = require('to-length-x');
 var sameValueZero = require('same-value-zero-x');
 var safeToString = require('safe-to-string-x');
 var sameValue = require('object-is');
+var splitString = require('has-boxed-string-x') === false;
 var pLastIndexOf = Array.prototype.lastIndexOf;
 
 if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
-  var splitString = require('has-boxed-string-x') === false;
-
   pLastIndexOf = function lastIndexOf(searchElement) {
     // eslint-disable-next-line no-invalid-this
     var iterable = splitString && isString(this) ? this.split('') : toObject(this);
