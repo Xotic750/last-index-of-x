@@ -1,6 +1,6 @@
 /**
  * @file An extended ES6 lastIndexOf.
- * @version 1.9.0
+ * @version 1.10.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -25,8 +25,7 @@ if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
   pLastIndexOf = function lastIndexOf(searchElement) {
     // eslint-disable-next-line no-invalid-this
     var length = toLength(this.length);
-
-    if (length === 0) {
+    if (length < 1) {
       return -1;
     }
 
@@ -56,17 +55,17 @@ if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
  * The array is searched backwards, starting at fromIndex.
  *
  * @private
- * @param {Array} object - The array to search.
+ * @param {Array} array - The array to search.
  * @param {*} searchElement - Element to locate in the array.
  * @param {number} fromIndex - The index at which to start searching backwards.
  * @param {Function} extendFn - The comparison function to use.
  * @returns {number} Returns index of found element, otherwise -1.
  */
 // eslint-disable-next-line max-params
-var findLastIdxFrom = function findLastIndexFrom(object, searchElement, fromIndex, extendFn) {
+var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex, extendFn) {
   var fIdx = fromIndex;
   while (fIdx >= 0) {
-    if (fIdx in object && extendFn(object[fIdx], searchElement)) {
+    if (fIdx in array && extendFn(array[fIdx], searchElement)) {
       return fIdx;
     }
 
