@@ -98,10 +98,12 @@ describe('lastIndexOf', function () {
 
     it('should work with fromIndex being greater than the length', function () {
       expect(lastIndexOf(testSubject, 2, 20)).toBe(7);
+      expect(lastIndexOf(testSubject, 2, Infinity)).toBe(7);
     });
 
     it('should work with fromIndex being negative and greater than the length', function () {
       expect(lastIndexOf(testSubject, 2, -20)).toBe(-1);
+      expect(lastIndexOf(testSubject, 2, -Infinity)).toBe(-1);
     });
   });
 

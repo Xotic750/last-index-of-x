@@ -1,6 +1,6 @@
 /**
  * @file An extended ES6 lastIndexOf.
- * @version 1.10.0
+ * @version 2.0.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -12,12 +12,11 @@
 var $isNaN = require('is-nan');
 var findLastIndex = require('find-last-index-x');
 var isString = require('is-string');
-var toInteger = require('to-integer-x');
 var toObject = require('to-object-x');
 var toLength = require('to-length-x');
 var sameValueZero = require('same-value-zero-x');
-var safeToString = require('safe-to-string-x');
 var sameValue = require('object-is');
+var calcFromIndexRight = require('calculate-from-index-right-x');
 var splitString = require('has-boxed-string-x') === false;
 var pLastIndexOf = Array.prototype.lastIndexOf;
 
@@ -29,13 +28,7 @@ if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
       return -1;
     }
 
-    var i = length - 1;
-    if (arguments.length > 1) {
-      i = Math.min(i, toInteger(arguments[1]));
-    }
-
-    // handle negative indices
-    i = i >= 0 ? i : length - Math.abs(i);
+    var i = arguments[1];
     while (i >= 0) {
       // eslint-disable-next-line no-invalid-this
       if (i in this && searchElement === this[i]) {
@@ -126,17 +119,8 @@ module.exports = function lastIndexOf(array, searchElement) {
     return -1;
   }
 
-  var args = [searchElement];
-  var extend;
-  if (arguments.length > 2) {
-    if (arguments.length > 3) {
-      args[1] = arguments[2];
-      extend = arguments[3];
-    } else if (isString(arguments[2])) {
-      extend = safeToString(arguments[2]);
-    }
-  }
-
+  var argLength = arguments.length;
+  var extend = argLength > 2 && argLength > 3 ? arguments[3] : arguments[2];
   var extendFn;
   if (isString(extend)) {
     extend = extend.toLowerCase();
@@ -147,18 +131,17 @@ module.exports = function lastIndexOf(array, searchElement) {
     }
   }
 
+  var fromIndex = length - 1;
   if (extendFn && (searchElement === 0 || $isNaN(searchElement))) {
-    var fromIndex;
-    if (arguments.length > 3) {
-      fromIndex = toInteger(arguments[2]);
-    } else {
-      fromIndex = length - 1;
-    }
+    if (argLength > 3) {
+      fromIndex = calcFromIndexRight(iterable, arguments[2]);
+      if (fromIndex < 0) {
+        return -1;
+      }
 
-    if (fromIndex >= 0) {
-      fromIndex = Math.min(fromIndex, length - 1);
-    } else {
-      fromIndex = length - Math.abs(fromIndex);
+      if (fromIndex >= length) {
+        fromIndex = length - 1;
+      }
     }
 
     if (fromIndex < length - 1) {
@@ -170,9 +153,16 @@ module.exports = function lastIndexOf(array, searchElement) {
     });
   }
 
-  if (Boolean(extendFn) === false && args.length === 1 && arguments.length > 2) {
-    args[1] = arguments[2];
+  if (argLength > 3 || (argLength > 2 && Boolean(extendFn) === false)) {
+    fromIndex = calcFromIndexRight(iterable, arguments[2]);
+    if (fromIndex < 0) {
+      return -1;
+    }
+
+    if (fromIndex >= length) {
+      fromIndex = length - 1;
+    }
   }
 
-  return pLastIndexOf.apply(iterable, args);
+  return pLastIndexOf.call(iterable, searchElement, fromIndex);
 };

@@ -23,7 +23,7 @@
 ## last-index-of-x
 An extended ES6 lastIndexOf.
 
-**Version**: 1.10.0  
+**Version**: 2.0.0  
 **Author**: Xotic750 <Xotic750@gmail.com>  
 **License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
 **Copyright**: Xotic750  
