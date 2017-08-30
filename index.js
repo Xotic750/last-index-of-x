@@ -1,6 +1,6 @@
 /**
  * @file An extended ES6 lastIndexOf.
- * @version 2.0.0
+ * @version 2.1.0
  * @author Xotic750 <Xotic750@gmail.com>
  * @copyright  Xotic750
  * @license {@link <https://opensource.org/licenses/MIT> MIT}
@@ -9,7 +9,7 @@
 
 'use strict';
 
-var $isNaN = require('is-nan');
+var numberIsNaN = require('is-nan');
 var findLastIndex = require('find-last-index-x');
 var isString = require('is-string');
 var toObject = require('to-object-x');
@@ -18,9 +18,20 @@ var sameValueZero = require('same-value-zero-x');
 var sameValue = require('object-is');
 var calcFromIndexRight = require('calculate-from-index-right-x');
 var splitString = require('has-boxed-string-x') === false;
-var pLastIndexOf = Array.prototype.lastIndexOf;
+var pLastIndexOf = typeof Array.prototype.lastIndexOf === 'function' && Array.prototype.lastIndexOf;
 
-if (typeof pLastIndexOf !== 'function' || [0, 1].lastIndexOf(0, -3) !== -1) {
+var implemented;
+if (pLastIndexOf) {
+  try {
+    implemented = pLastIndexOf.call([0, 1], 0, -3) === -1 && pLastIndexOf.call([
+      0,
+      1,
+      0
+    ], 0) === 2;
+  } catch (ignore) {}
+}
+
+if (implemented !== true) {
   pLastIndexOf = function lastIndexOf(searchElement) {
     // eslint-disable-next-line no-invalid-this
     var length = toLength(this.length);
@@ -132,7 +143,7 @@ module.exports = function lastIndexOf(array, searchElement) {
   }
 
   var fromIndex = length - 1;
-  if (extendFn && (searchElement === 0 || $isNaN(searchElement))) {
+  if (extendFn && (searchElement === 0 || numberIsNaN(searchElement))) {
     if (argLength > 3) {
       fromIndex = calcFromIndexRight(iterable, arguments[2]);
       if (fromIndex < 0) {
