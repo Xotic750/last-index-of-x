@@ -1,15 +1,6 @@
 'use strict';
 
-// IE 6 - 8 have a bug where this returns false.
-var canDistinguish = 0 in [undefined];
-var ifHasDenseUndefinedsIt = canDistinguish ? it : xit;
-var undefinedIfNoSparseBug = canDistinguish ? undefined : {
-  valueOf: function () {
-    return 0;
-  }
-};
 var lastIndexOf;
-
 if (typeof module === 'object' && module.exports) {
   require('es5-shim');
   require('es5-shim/es5-sham');
@@ -18,10 +9,29 @@ if (typeof module === 'object' && module.exports) {
   }
   require('json3').runInContext(null, JSON);
   require('es6-shim');
+  var es7 = require('es7-shim');
+  Object.keys(es7).forEach(function (key) {
+    var obj = es7[key];
+    if (typeof obj.shim === 'function') {
+      obj.shim();
+    }
+  });
+
   lastIndexOf = require('../../index.js');
 } else {
   lastIndexOf = returnExports;
 }
+
+var itHasDoc = typeof document !== 'undefined' && document ? it : xit;
+
+// IE 6 - 8 have a bug where this returns false.
+var canDistinguish = 0 in [undefined];
+var ifHasDenseUndefinedsIt = canDistinguish ? it : xit;
+var undefinedIfNoSparseBug = canDistinguish ? undefined : {
+  valueOf: function () {
+    return 0;
+  }
+};
 
 describe('lastIndexOf', function () {
   var testSubject;
@@ -104,6 +114,25 @@ describe('lastIndexOf', function () {
     it('should work with fromIndex being negative and greater than the length', function () {
       expect(lastIndexOf(testSubject, 2, -20)).toBe(-1);
       expect(lastIndexOf(testSubject, 2, -Infinity)).toBe(-1);
+    });
+
+    it('should work with strings', function () {
+      expect(lastIndexOf('abc', 'b')).toBe(1);
+    });
+
+    it('should work with arguments', function () {
+      var obj = (function () {
+        return arguments;
+      }('a', 'b', 'c'));
+
+      expect(lastIndexOf(obj, 'b')).toBe(1);
+    });
+
+    itHasDoc('should work wih DOM elements', function () {
+      var fragment = document.createDocumentFragment();
+      var div = document.createElement('div');
+      fragment.appendChild(div);
+      expect(lastIndexOf(fragment.childNodes, div)).toBe(0);
     });
   });
 
