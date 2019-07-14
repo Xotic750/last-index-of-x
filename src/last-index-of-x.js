@@ -7,31 +7,27 @@
  * @module last-index-of-x
  */
 
-'use strict';
+const numberIsNaN = require('is-nan-x');
+const findLastIndex = require('find-last-index-x');
+const isString = require('is-string');
+const toObject = require('to-object-x');
+const toLength = require('to-length-x');
+const sameValueZero = require('same-value-zero-x');
+const sameValue = require('same-value-x');
+const calcFromIndexRight = require('calculate-from-index-right-x');
+const splitIfBoxedBug = require('split-if-boxed-bug-x');
 
-var numberIsNaN = require('is-nan-x');
-var findLastIndex = require('find-last-index-x');
-var isString = require('is-string');
-var toObject = require('to-object-x');
-var toLength = require('to-length-x');
-var sameValueZero = require('same-value-zero-x');
-var sameValue = require('same-value-x');
-var calcFromIndexRight = require('calculate-from-index-right-x');
-var splitIfBoxedBug = require('split-if-boxed-bug-x');
-var pLastIndexOf = typeof Array.prototype.lastIndexOf === 'function' && Array.prototype.lastIndexOf;
+let pLastIndexOf = typeof Array.prototype.lastIndexOf === 'function' && Array.prototype.lastIndexOf;
 
-var isWorking;
+let isWorking;
+
 if (pLastIndexOf) {
-  var attempt = require('attempt-x');
-  var res = attempt.call([0, 1], pLastIndexOf, 0, -3);
+  const attempt = require('attempt-x');
+  let res = attempt.call([0, 1], pLastIndexOf, 0, -3);
   isWorking = res.threw === false && res.value === -1;
 
   if (isWorking) {
-    res = attempt.call([
-      0,
-      1,
-      0
-    ], pLastIndexOf, 0);
+    res = attempt.call([0, 1, 0], pLastIndexOf, 0);
     isWorking = res.threw === false && res.value === 2;
   }
 
@@ -41,7 +37,7 @@ if (pLastIndexOf) {
   }
 
   if (isWorking) {
-    var testArr = [];
+    const testArr = [];
     testArr.length = 2;
     testArr[0] = void 0;
     res = attempt.call(testArr, pLastIndexOf, void 0);
@@ -54,9 +50,13 @@ if (pLastIndexOf) {
   }
 
   if (isWorking) {
-    res = attempt.call((function () {
-      return arguments;
-    }('a', 'b', 'c')), pLastIndexOf, 'c');
+    res = attempt.call(
+      (function() {
+        return arguments;
+      })('a', 'b', 'c'),
+      pLastIndexOf,
+      'c',
+    );
     isWorking = res.threw === false && res.value === 2;
   }
 }
@@ -64,12 +64,13 @@ if (pLastIndexOf) {
 if (isWorking !== true) {
   pLastIndexOf = function lastIndexOf(searchElement) {
     // eslint-disable-next-line no-invalid-this
-    var length = toLength(this.length);
+    const length = toLength(this.length);
+
     if (length < 1) {
       return -1;
     }
 
-    var i = arguments[1];
+    let i = arguments[1];
     while (i >= 0) {
       // eslint-disable-next-line no-invalid-this
       if (i in this && searchElement === this[i]) {
@@ -96,8 +97,8 @@ if (isWorking !== true) {
  * @returns {number} Returns index of found element, otherwise -1.
  */
 // eslint-disable-next-line max-params
-var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex, extendFn) {
-  var fIdx = fromIndex;
+const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex, extendFn) {
+  let fIdx = fromIndex;
   while (fIdx >= 0) {
     if (fIdx in array && extendFn(array[fIdx], searchElement)) {
       return fIdx;
@@ -153,18 +154,21 @@ var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex
  * lastIndexOf(testSubject, 2, -6, 'SameValue'); // 1
  */
 module.exports = function lastIndexOf(array, searchElement) {
-  var object = toObject(array);
-  var iterable = splitIfBoxedBug(object);
-  var length = toLength(iterable.length);
+  const object = toObject(array);
+  const iterable = splitIfBoxedBug(object);
+  const length = toLength(iterable.length);
+
   if (length < 1) {
     return -1;
   }
 
-  var argLength = arguments.length;
-  var extend = argLength > 2 && argLength > 3 ? arguments[3] : arguments[2];
-  var extendFn;
+  const argLength = arguments.length;
+  let extend = argLength > 2 && argLength > 3 ? arguments[3] : arguments[2];
+  let extendFn;
+
   if (isString(extend)) {
     extend = extend.toLowerCase();
+
     if (extend === 'samevalue') {
       extendFn = sameValue;
     } else if (extend === 'samevaluezero') {
@@ -172,10 +176,12 @@ module.exports = function lastIndexOf(array, searchElement) {
     }
   }
 
-  var fromIndex = length - 1;
+  let fromIndex = length - 1;
+
   if (extendFn && (searchElement === 0 || numberIsNaN(searchElement))) {
     if (argLength > 3) {
       fromIndex = calcFromIndexRight(iterable, arguments[2]);
+
       if (fromIndex < 0) {
         return -1;
       }
@@ -189,13 +195,14 @@ module.exports = function lastIndexOf(array, searchElement) {
       return findLastIdxFrom(iterable, searchElement, fromIndex, extendFn);
     }
 
-    return findLastIndex(iterable, function (element, index) {
+    return findLastIndex(iterable, function(element, index) {
       return index in iterable && extendFn(searchElement, element);
     });
   }
 
   if (argLength > 3 || (argLength > 2 && Boolean(extendFn) === false)) {
     fromIndex = calcFromIndexRight(iterable, arguments[2]);
+
     if (fromIndex < 0) {
       return -1;
     }
