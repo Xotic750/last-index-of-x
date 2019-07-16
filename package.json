@@ -53,12 +53,12 @@
     "attempt-x": "^2.0.5",
     "calculate-from-index-right-x": "^2.1.0",
     "find-last-index-x": "^2.1.0",
-    "is-nan-x": "^2.0.10",
+    "is-nan-x": "^2.0.11",
     "is-string": "^1.0.4",
-    "same-value-x": "^2.0.9",
-    "same-value-zero-x": "^2.0.9",
-    "to-length-x": "^4.0.4",
-    "to-object-x": "^2.0.2"
+    "same-value-x": "^2.0.10",
+    "same-value-zero-x": "^2.0.10",
+    "to-length-x": "^4.0.5",
+    "to-object-x": "^2.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.0",

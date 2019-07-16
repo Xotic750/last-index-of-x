@@ -7,15 +7,16 @@
  * @module last-index-of-x
  */
 
-const numberIsNaN = require('is-nan-x');
-const findLastIndex = require('find-last-index-x');
-const isString = require('is-string');
-const toObject = require('to-object-x');
-const toLength = require('to-length-x');
-const sameValueZero = require('same-value-zero-x');
-const sameValue = require('same-value-x');
-const calcFromIndexRight = require('calculate-from-index-right-x');
-const splitIfBoxedBug = require('split-if-boxed-bug-x');
+import numberIsNaN from 'is-nan-x';
+
+import findLastIndex from 'find-last-index-x';
+import isString from 'is-string';
+import toObject from 'to-object-x';
+import toLength from 'to-length-x';
+import sameValueZero from 'same-value-zero-x';
+import sameValue from 'same-value-x';
+import calcFromIndexRight from 'calculate-from-index-right-x';
+import splitIfBoxedBug from 'split-if-boxed-bug-x';
 
 let pLastIndexOf = typeof Array.prototype.lastIndexOf === 'function' && Array.prototype.lastIndexOf;
 
@@ -153,7 +154,7 @@ const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromInd
  * lastIndexOf(testSubject, 0, 'SameValue'); // 9
  * lastIndexOf(testSubject, 2, -6, 'SameValue'); // 1
  */
-module.exports = function lastIndexOf(array, searchElement) {
+export default function lastIndexOf(array, searchElement) {
   const object = toObject(array);
   const iterable = splitIfBoxedBug(object);
   const length = toLength(iterable.length);
@@ -213,4 +214,4 @@ module.exports = function lastIndexOf(array, searchElement) {
   }
 
   return pLastIndexOf.call(iterable, searchElement, fromIndex);
-};
+}
