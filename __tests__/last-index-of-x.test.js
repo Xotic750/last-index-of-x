@@ -49,14 +49,12 @@ describe('lastIndexOf', function() {
   describe('array', function() {
     it('should find the element', function() {
       expect.assertions(1);
-      expect.assertions(1);
       const expected = 5;
       const actual = lastIndexOf(testSubject, 'hej');
       expect(actual).toBe(expected);
     });
 
     it('should not find the element', function() {
-      expect.assertions(1);
       expect.assertions(1);
       let expected = -1;
       let actual = lastIndexOf(testSubject, 'mus');
@@ -81,7 +79,6 @@ describe('lastIndexOf', function() {
 
     it('should use a strict test', function() {
       expect.assertions(1);
-      expect.assertions(1);
       let actual = lastIndexOf(testSubject, null);
       expect(actual).toBe(6);
 
@@ -94,7 +91,6 @@ describe('lastIndexOf', function() {
 
     it('should skip the first if fromIndex is set', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, 2)).toBe(1);
       expect(lastIndexOf(testSubject, 2, 2)).toBe(1);
       expect(lastIndexOf(testSubject, 2, 7)).toBe(7);
@@ -102,13 +98,11 @@ describe('lastIndexOf', function() {
 
     it('should work with negative fromIndex', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, -3)).toBe(7);
       expect(lastIndexOf(testSubject, 2, -9)).toBe(1);
     });
 
     it('should work with fromIndex being greater than the length', function() {
-      expect.assertions(1);
       expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, 20)).toBe(7);
       expect(lastIndexOf(testSubject, 2, Infinity)).toBe(7);
@@ -116,19 +110,16 @@ describe('lastIndexOf', function() {
 
     it('should work with fromIndex being negative and greater than the length', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, -20)).toBe(-1);
       expect(lastIndexOf(testSubject, 2, -Infinity)).toBe(-1);
     });
 
     it('should work with strings', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf('abc', 'b')).toBe(1);
     });
 
     it('should work with arguments', function() {
-      expect.assertions(1);
       expect.assertions(1);
       const obj = (function() {
         return arguments;
@@ -158,14 +149,12 @@ describe('lastIndexOf', function() {
 
     it('should find the element (array-like)', function() {
       expect.assertions(1);
-      expect.assertions(1);
       const expected = 5;
       const actual = lastIndexOf(testAL, 'hej');
       expect(actual).toBe(expected);
     });
 
     it('should not find the element (array-like)', function() {
-      expect.assertions(1);
       expect.assertions(1);
       const expected = -1;
       const actual = lastIndexOf(testAL, 'mus');
@@ -186,7 +175,6 @@ describe('lastIndexOf', function() {
 
     it('should use a strict test (array-like)', function() {
       expect.assertions(1);
-      expect.assertions(1);
       let actual = lastIndexOf(testAL, null);
       expect(actual).toBe(6);
 
@@ -196,7 +184,6 @@ describe('lastIndexOf', function() {
 
     it('should skip the first if fromIndex is set', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testAL, 2, 2)).toBe(1);
       expect(lastIndexOf(testAL, 2, 1)).toBe(1);
       expect(lastIndexOf(testAL, 2, 7)).toBe(7);
@@ -204,19 +191,16 @@ describe('lastIndexOf', function() {
 
     it('should work with negative fromIndex', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testAL, 2, -3)).toBe(7);
       expect(lastIndexOf(testAL, 2, -9)).toBe(1);
     });
 
     it('should work with fromIndex being greater than the length', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testAL, 2, 20)).toBe(7);
     });
 
     it('should work with fromIndex being negative and greater than the length', function() {
-      expect.assertions(1);
       expect.assertions(1);
       expect(lastIndexOf(testAL, 2, -20)).toBe(-1);
     });
@@ -235,14 +219,12 @@ describe('lastIndexOf: SameValueZero', function() {
   describe('array', function() {
     it('should find the element', function() {
       expect.assertions(1);
-      expect.assertions(1);
       const expected = 5;
       const actual = lastIndexOf(testSubject, 'hej', 'SameValueZero');
       expect(actual).toBe(expected);
     });
 
     it('should not find the element', function() {
-      expect.assertions(1);
       expect.assertions(1);
       let expected = -1;
       let actual = lastIndexOf(testSubject, 'mus', 'SameValueZero');
@@ -267,7 +249,6 @@ describe('lastIndexOf: SameValueZero', function() {
 
     it('should use a strict test', function() {
       expect.assertions(1);
-      expect.assertions(1);
       let actual = lastIndexOf(testSubject, null, 'SameValueZero');
       expect(actual).toBe(6);
 
@@ -280,7 +261,6 @@ describe('lastIndexOf: SameValueZero', function() {
 
     it('should skip the first if fromIndex is set', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, 2, 'SameValueZero')).toBe(1);
       expect(lastIndexOf(testSubject, 2, 2, 'SameValueZero')).toBe(1);
       expect(lastIndexOf(testSubject, 2, 7, 'SameValueZero')).toBe(7);
@@ -288,19 +268,16 @@ describe('lastIndexOf: SameValueZero', function() {
 
     it('should work with negative fromIndex', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, -3, 'SameValueZero')).toBe(7);
       expect(lastIndexOf(testSubject, 2, -9, 'SameValueZero')).toBe(1);
     });
 
     it('should work with fromIndex being greater than the length', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, 20, 'SameValueZero')).toBe(7);
     });
 
     it('should work with fromIndex being negative and greater than the length', function() {
-      expect.assertions(1);
       expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, -20, 'SameValueZero')).toBe(-1);
     });
@@ -319,14 +296,12 @@ describe('lastIndexOf: SameValueZero', function() {
 
     it('should find the element (array-like)', function() {
       expect.assertions(1);
-      expect.assertions(1);
       const expected = 5;
       const actual = lastIndexOf(testAL, 'hej', 'SameValueZero');
       expect(actual).toBe(expected);
     });
 
     it('should not find the element (array-like)', function() {
-      expect.assertions(1);
       expect.assertions(1);
       const expected = -1;
       const actual = lastIndexOf(testAL, 'mus', 'SameValueZero');
@@ -347,7 +322,6 @@ describe('lastIndexOf: SameValueZero', function() {
 
     it('should use a strict test (array-like)', function() {
       expect.assertions(1);
-      expect.assertions(1);
       let actual = lastIndexOf(testAL, null, 'SameValueZero');
       expect(actual).toBe(6);
 
@@ -357,7 +331,6 @@ describe('lastIndexOf: SameValueZero', function() {
 
     it('should skip the first if fromIndex is set', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testAL, 2, 2, 'SameValueZero')).toBe(1);
       expect(lastIndexOf(testAL, 2, 1, 'SameValueZero')).toBe(1);
       expect(lastIndexOf(testAL, 2, 7, 'SameValueZero')).toBe(7);
@@ -365,19 +338,16 @@ describe('lastIndexOf: SameValueZero', function() {
 
     it('should work with negative fromIndex', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testAL, 2, -3, 'SameValueZero')).toBe(7);
       expect(lastIndexOf(testAL, 2, -9, 'SameValueZero')).toBe(1);
     });
 
     it('should work with fromIndex being greater than the length', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testAL, 2, 20, 'SameValueZero')).toBe(7);
     });
 
     it('should work with fromIndex being negative and greater than the length', function() {
-      expect.assertions(1);
       expect.assertions(1);
       expect(lastIndexOf(testAL, 2, -20, 'SameValueZero')).toBe(-1);
     });
@@ -396,14 +366,12 @@ describe('lastIndexOf: SameValue', function() {
   describe('array', function() {
     it('should find the element', function() {
       expect.assertions(1);
-      expect.assertions(1);
       const expected = 5;
       const actual = lastIndexOf(testSubject, 'hej', 'SameValue');
       expect(actual).toBe(expected);
     });
 
     it('should not find the element', function() {
-      expect.assertions(1);
       expect.assertions(1);
       let expected = -1;
       let actual = lastIndexOf(testSubject, 'mus', 'SameValue');
@@ -428,7 +396,6 @@ describe('lastIndexOf: SameValue', function() {
 
     it('should use a strict test', function() {
       expect.assertions(1);
-      expect.assertions(1);
       let actual = lastIndexOf(testSubject, null, 'SameValue');
       expect(actual).toBe(6);
 
@@ -441,7 +408,6 @@ describe('lastIndexOf: SameValue', function() {
 
     it('should skip the first if fromIndex is set', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, 2, 'SameValue')).toBe(1);
       expect(lastIndexOf(testSubject, 2, 2, 'SameValue')).toBe(1);
       expect(lastIndexOf(testSubject, 2, 7, 'SameValue')).toBe(7);
@@ -449,19 +415,16 @@ describe('lastIndexOf: SameValue', function() {
 
     it('should work with negative fromIndex', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, -3, 'SameValue')).toBe(7);
       expect(lastIndexOf(testSubject, 2, -9, 'SameValue')).toBe(1);
     });
 
     it('should work with fromIndex being greater than the length', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, 20, 'SameValue')).toBe(7);
     });
 
     it('should work with fromIndex being negative and greater than the length', function() {
-      expect.assertions(1);
       expect.assertions(1);
       expect(lastIndexOf(testSubject, 2, -20, 'SameValue')).toBe(-1);
     });
@@ -480,14 +443,12 @@ describe('lastIndexOf: SameValue', function() {
 
     it('should find the element (array-like)', function() {
       expect.assertions(1);
-      expect.assertions(1);
       const expected = 5;
       const actual = lastIndexOf(testAL, 'hej', 'SameValue');
       expect(actual).toBe(expected);
     });
 
     it('should not find the element (array-like)', function() {
-      expect.assertions(1);
       expect.assertions(1);
       const expected = -1;
       const actual = lastIndexOf(testAL, 'mus', 'SameValue');
@@ -508,7 +469,6 @@ describe('lastIndexOf: SameValue', function() {
 
     it('should use a strict test (array-like)', function() {
       expect.assertions(1);
-      expect.assertions(1);
       let actual = lastIndexOf(testAL, null, 'SameValue');
       expect(actual).toBe(6);
 
@@ -518,7 +478,6 @@ describe('lastIndexOf: SameValue', function() {
 
     it('should skip the first if fromIndex is set', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testAL, 2, 2, 'SameValue')).toBe(1);
       expect(lastIndexOf(testAL, 2, 1, 'SameValue')).toBe(1);
       expect(lastIndexOf(testAL, 2, 7, 'SameValue')).toBe(7);
@@ -526,19 +485,16 @@ describe('lastIndexOf: SameValue', function() {
 
     it('should work with negative fromIndex', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testAL, 2, -3, 'SameValue')).toBe(7);
       expect(lastIndexOf(testAL, 2, -9, 'SameValue')).toBe(1);
     });
 
     it('should work with fromIndex being greater than the length', function() {
       expect.assertions(1);
-      expect.assertions(1);
       expect(lastIndexOf(testAL, 2, 20, 'SameValue')).toBe(7);
     });
 
     it('should work with fromIndex being negative and greater than the length', function() {
-      expect.assertions(1);
       expect.assertions(1);
       expect(lastIndexOf(testAL, 2, -20, 'SameValue')).toBe(-1);
     });

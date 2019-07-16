@@ -1,12 +1,3 @@
-/**
- * @file An extended ES6 lastIndexOf.
- * @version 2.2.0
- * @author Xotic750 <Xotic750@gmail.com>
- * @copyright  Xotic750
- * @license {@link <https://opensource.org/licenses/MIT> MIT}
- * @module last-index-of-x
- */
-
 import numberIsNaN from 'is-nan-x';
 
 import findLastIndex from 'find-last-index-x';
@@ -64,7 +55,7 @@ if (pLastIndexOf) {
 
 if (isWorking !== true) {
   pLastIndexOf = function lastIndexOf(searchElement) {
-    // eslint-disable-next-line no-invalid-this
+    // eslint-disable-next-line babel/no-invalid-this
     const length = toLength(this.length);
 
     if (length < 1) {
@@ -73,7 +64,7 @@ if (isWorking !== true) {
 
     let i = arguments[1];
     while (i >= 0) {
-      // eslint-disable-next-line no-invalid-this
+      // eslint-disable-next-line babel/no-invalid-this
       if (i in this && searchElement === this[i]) {
         return i;
       }
@@ -129,30 +120,6 @@ const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromInd
  *  be searched.
  * @param {string} [extend] - Extension type: `SameValue` or `SameValueZero`.
  * @returns {number} Returns index of found element, otherwise -1.
- * @example
- * var lastIndexOf = require('last-index-of-x');
- * var subject = [NaN, 2, 3, undefined, true, 'hej', null, 2, false, 0, -0];
- *
- * // Standard mode, operates just like `Array.prototype.lastIndexOf`.
- * lastIndexOf(subject, null); // 6
- * lastIndexOf(testSubject, '2'); // -1
- * lastIndexOf(testSubject, NaN); // -1
- * lastIndexOf(testSubject, 0); // 10
- * lastIndexOf(testSubject, 2, -6); // 1
- *
- * // `SameValueZero` mode extends `lastIndexOf` to match `NaN`.
- * lastIndexOf(subject, null, 'SameValueZero'); // 6
- * lastIndexOf(testSubject, '2', 'SameValueZero'); // -1
- * lastIndexOf(testSubject, NaN, 'SameValueZero'); // 0
- * lastIndexOf(testSubject, 0, 'SameValueZero'); // 10
- * lastIndexOf(testSubject, 2, -6, 'SameValueZero'); // 1
- *
- * // `SameValue` mode extends `lastIndexOf` to match `NaN` and signed `0`.
- * lastIndexOf(subject, null, 'SameValue'); // 6
- * lastIndexOf(testSubject, '2', 'SameValue'); // -1
- * lastIndexOf(testSubject, NaN, 'SameValue'); // 0
- * lastIndexOf(testSubject, 0, 'SameValue'); // 9
- * lastIndexOf(testSubject, 2, -6, 'SameValue'); // 1
  */
 export default function lastIndexOf(array, searchElement) {
   const object = toObject(array);
