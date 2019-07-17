@@ -121,7 +121,7 @@ const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromInd
  * @param {string} [extend] - Extension type: `SameValue` or `SameValueZero`.
  * @returns {number} Returns index of found element, otherwise -1.
  */
-export default function lastIndexOf(array, searchElement) {
+const lastIndexOf = function lastIndexOf(array, searchElement) {
   const object = toObject(array);
   const iterable = splitIfBoxedBug(object);
   const length = toLength(iterable.length);
@@ -181,4 +181,6 @@ export default function lastIndexOf(array, searchElement) {
   }
 
   return pLastIndexOf.call(iterable, searchElement, fromIndex);
-}
+};
+
+export default lastIndexOf;
