@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "attempt-x": "^2.0.9",
-    "calculate-from-index-right-x": "^2.1.0",
-    "find-last-index-x": "^2.1.0",
+    "calculate-from-index-right-x": "^3.0.0",
+    "find-last-index-x": "^3.0.0",
     "is-nan-x": "^2.0.15",
     "is-string": "^1.0.4",
     "same-value-x": "^2.0.15",
