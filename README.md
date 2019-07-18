@@ -21,15 +21,13 @@
 <a name="module_last-index-of-x"></a>
 
 ## last-index-of-x
+
 An extended ES6 lastIndexOf.
 
-**Version**: 2.2.0  
-**Author**: Xotic750 <Xotic750@gmail.com>  
-**License**: [MIT](&lt;https://opensource.org/licenses/MIT&gt;)  
-**Copyright**: Xotic750  
 <a name="exp_module_last-index-of-x--module.exports"></a>
 
 ### `module.exports(array, searchElement, [fromIndex], [extend])` ⇒ <code>number</code> ⏏
+
 This method returns the last index at which a given element
 can be found in the array, or -1 if it is not present.
 The array is searched backwards, starting at fromIndex.
@@ -40,18 +38,19 @@ The array is searched backwards, starting at fromIndex.
 
 - <code>TypeError</code> If `array` is `null` or `undefined`.
 
+| Param         | Type                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| array         | <code>Array</code>  | The array to search.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| searchElement | <code>\*</code>     | Element to locate in the `array`.                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| [fromIndex]   | <code>number</code> | The index at which to start searching backwards. Defaults to the array's length minus one, i.e. the whole array will be searched. If the index is greater than or equal to the length of the array, the whole array will be searched. If negative, it is taken as the offset from the end of the array. Note that even when the index is negative, the array is still searched from back to front. If the calculated index is less than 0, -1 is returned, i.e. the array will not be searched. |
+| [extend]      | <code>string</code> | Extension type: `SameValue` or `SameValueZero`.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
-| Param | Type | Description |
-| --- | --- | --- |
-| array | <code>Array</code> | The array to search. |
-| searchElement | <code>\*</code> | Element to locate in the `array`. |
-| [fromIndex] | <code>number</code> | The index at which to start searching  backwards. Defaults to the array's length minus one, i.e. the whole array  will be searched. If the index is greater than or equal to the length of  the array, the whole array will be searched. If negative, it is taken as  the offset from the end of the array. Note that even when the index is  negative, the array is still searched from back to front. If the  calculated index is less than 0, -1 is returned, i.e. the array will not  be searched. |
-| [extend] | <code>string</code> | Extension type: `SameValue` or `SameValueZero`. |
+**Example**
 
-**Example**  
 ```js
-var lastIndexOf = require('last-index-of-x');
-var subject = [NaN, 2, 3, undefined, true, 'hej', null, 2, false, 0, -0];
+import lastIndexOf from 'last-index-of-x';
+
+const subject = [NaN, 2, 3, undefined, true, 'hej', null, 2, false, 0, -0];
 
 // Standard mode, operates just like `Array.prototype.lastIndexOf`.
 lastIndexOf(subject, null); // 6

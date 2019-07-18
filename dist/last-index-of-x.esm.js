@@ -1,3 +1,5 @@
+function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
+
 import numberIsNaN from 'is-nan-x';
 import findLastIndex from 'find-last-index-x';
 import isString from 'is-string';
@@ -8,13 +10,11 @@ import sameValue from 'same-value-x';
 import calcFromIndexRight from 'calculate-from-index-right-x';
 import splitIfBoxedBug from 'split-if-boxed-bug-x';
 import attempt from 'attempt-x';
-
-let pLastIndexOf = typeof Array.prototype.lastIndexOf === 'function' && Array.prototype.lastIndexOf;
-
-let isWorking;
+var pLastIndexOf = typeof Array.prototype.lastIndexOf === 'function' && Array.prototype.lastIndexOf;
+var isWorking;
 
 if (pLastIndexOf) {
-  let res = attempt.call([0, 1], pLastIndexOf, 0, -3);
+  var res = attempt.call([0, 1], pLastIndexOf, 0, -3);
   isWorking = res.threw === false && res.value === -1;
 
   if (isWorking) {
@@ -28,11 +28,13 @@ if (pLastIndexOf) {
   }
 
   if (isWorking) {
-    const testArr = [];
+    var testArr = [];
     testArr.length = 2;
     /* eslint-disable-next-line no-void */
+
     testArr[0] = void 0;
     /* eslint-disable-next-line no-void */
+
     res = attempt.call(testArr, pLastIndexOf, void 0);
     isWorking = res.threw === false && res.value === 0;
   }
@@ -43,14 +45,10 @@ if (pLastIndexOf) {
   }
 
   if (isWorking) {
-    res = attempt.call(
-      (function getArgs() {
-        /* eslint-disable-next-line prefer-rest-params */
-        return arguments;
-      })('a', 'b', 'c'),
-      pLastIndexOf,
-      'c',
-    );
+    res = attempt.call(function getArgs() {
+      /* eslint-disable-next-line prefer-rest-params */
+      return arguments;
+    }('a', 'b', 'c'), pLastIndexOf, 'c');
     isWorking = res.threw === false && res.value === 2;
   }
 }
@@ -58,14 +56,16 @@ if (pLastIndexOf) {
 if (isWorking !== true) {
   pLastIndexOf = function lastIndexOf(searchElement) {
     /* eslint-disable-next-line babel/no-invalid-this */
-    const length = toLength(this.length);
+    var length = toLength(this.length);
 
     if (length < 1) {
       return -1;
     }
-
     /* eslint-disable-next-line prefer-rest-params */
-    let i = arguments[1];
+
+
+    var i = arguments[1];
+
     while (i >= 0) {
       /* eslint-disable-next-line babel/no-invalid-this */
       if (i in this && searchElement === this[i]) {
@@ -78,7 +78,6 @@ if (isWorking !== true) {
     return -1;
   };
 }
-
 /**
  * This method returns the last index at which a given element
  * can be found in the array, or -1 if it is not present.
@@ -91,8 +90,11 @@ if (isWorking !== true) {
  * @param {Function} extendFn - The comparison function to use.
  * @returns {number} Returns index of found element, otherwise -1.
  */
-const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex, extendFn) {
-  let fIdx = fromIndex;
+
+
+var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex, extendFn) {
+  var fIdx = fromIndex;
+
   while (fIdx >= 0) {
     if (fIdx in array && extendFn(array[fIdx], searchElement)) {
       return fIdx;
@@ -102,10 +104,9 @@ const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromInd
   }
 
   return -1;
-};
-
-// eslint-disable jsdoc/check-param-names
+}; // eslint-disable jsdoc/check-param-names
 // noinspection JSCommentMatchesSignature
+
 /**
  * This method returns the last index at which a given element
  * can be found in the array, or -1 if it is not present.
@@ -126,19 +127,24 @@ const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromInd
  * @returns {number} Returns index of found element, otherwise -1.
  */
 // eslint-enable jsdoc/check-param-names
-const lastIndexOf = function lastIndexOf(array, searchElement) {
-  const object = toObject(array);
-  const iterable = splitIfBoxedBug(object);
-  const length = toLength(iterable.length);
+
+
+var lastIndexOf = function lastIndexOf(array, searchElement) {
+  var _this = this;
+
+  var object = toObject(array);
+  var iterable = splitIfBoxedBug(object);
+  var length = toLength(iterable.length);
 
   if (length < 1) {
     return -1;
   }
 
-  const argLength = arguments.length;
+  var argLength = arguments.length;
   /* eslint-disable-next-line prefer-rest-params */
-  let extend = argLength > 2 && argLength > 3 ? arguments[3] : arguments[2];
-  let extendFn;
+
+  var extend = argLength > 2 && argLength > 3 ? arguments[3] : arguments[2];
+  var extendFn;
 
   if (isString(extend)) {
     extend = extend.toLowerCase();
@@ -150,7 +156,7 @@ const lastIndexOf = function lastIndexOf(array, searchElement) {
     }
   }
 
-  let fromIndex = length - 1;
+  var fromIndex = length - 1;
 
   if (extendFn && (searchElement === 0 || numberIsNaN(searchElement))) {
     if (argLength > 3) {
@@ -170,12 +176,14 @@ const lastIndexOf = function lastIndexOf(array, searchElement) {
       return findLastIdxFrom(iterable, searchElement, fromIndex, extendFn);
     }
 
-    return findLastIndex(iterable, (element, index) => {
+    return findLastIndex(iterable, function (element, index) {
+      _newArrowCheck(this, _this);
+
       return index in iterable && extendFn(searchElement, element);
-    });
+    }.bind(this));
   }
 
-  if (argLength > 3 || (argLength > 2 && Boolean(extendFn) === false)) {
+  if (argLength > 3 || argLength > 2 && Boolean(extendFn) === false) {
     /* eslint-disable-next-line prefer-rest-params */
     fromIndex = calcFromIndexRight(iterable, arguments[2]);
 
@@ -192,3 +200,5 @@ const lastIndexOf = function lastIndexOf(array, searchElement) {
 };
 
 export default lastIndexOf;
+
+//# sourceMappingURL=last-index-of-x.esm.js.map
