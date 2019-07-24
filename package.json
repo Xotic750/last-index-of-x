@@ -1,6 +1,6 @@
 {
   "name": "last-index-of-x",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "description": "An extended ES6 lastIndexOf.",
   "homepage": "https://github.com/Xotic750/last-index-of-x",
   "author": {
@@ -23,6 +23,7 @@
   ],
   "module": "dist/last-index-of-x.esm.js",
   "main": "dist/last-index-of-x.js",
+  "jsdelivr": "dist/last-index-of-x.min.js",
   "scripts": {
     "build:esm": "mkdirp dist && babel -s true --env-name esm src/last-index-of-x.js -o dist/last-index-of-x.esm.js",
     "build:base": "webpack --bail --progress --profile --colors",
@@ -50,16 +51,16 @@
     "url": "https://github.com/Xotic750/last-index-of-x/issues"
   },
   "dependencies": {
-    "attempt-x": "^2.0.16",
-    "calculate-from-index-right-x": "^3.0.5",
-    "find-last-index-x": "^3.0.5",
-    "is-nan-x": "^2.0.22",
+    "attempt-x": "^2.0.18",
+    "calculate-from-index-right-x": "^3.0.6",
+    "find-last-index-x": "^3.0.6",
+    "is-nan-x": "^2.0.24",
     "is-string": "^1.0.4",
-    "same-value-x": "^2.0.22",
-    "same-value-zero-x": "^2.0.22",
-    "split-if-boxed-bug-x": "^2.0.16",
-    "to-length-x": "^4.0.18",
-    "to-object-x": "^2.0.14"
+    "same-value-x": "^2.0.24",
+    "same-value-zero-x": "^2.0.24",
+    "split-if-boxed-bug-x": "^2.0.18",
+    "to-length-x": "^4.0.20",
+    "to-object-x": "^2.0.16"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -97,7 +98,7 @@
     "eslint-plugin-html": "^6.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jest": "^22.13.6",
-    "eslint-plugin-jsdoc": "^15.7.1",
+    "eslint-plugin-jsdoc": "^15.7.2",
     "eslint-plugin-json": "^1.4.0",
     "eslint-plugin-lodash": "^5.1.0",
     "eslint-plugin-no-use-extend-native": "^0.4.1",
