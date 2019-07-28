@@ -161,21 +161,22 @@ const runExtendFn = function runExtendFn(obj) {
   return runFindIndex({fromIndex, length, iterable, searchElement, extendFn});
 };
 
-const getFromIndex = function getFromIndex(obj) {
-  const {args, length, extendFn, iterable} = obj;
-  let fromIndex = length - 1;
+const conditionalFromIndex = function conditionalFromIndex(obj) {
+  const {iterable, args, length} = obj;
+  const fromIndex = calcFromIndexRight(iterable, args[2]);
 
-  if (args.length > 3 || (args.length > 2 && toBoolean(extendFn) === false)) {
-    fromIndex = calcFromIndexRight(iterable, args[2]);
-
-    if (fromIndex < 0) {
-      return -1;
-    }
-
-    fromIndex = fromIndex >= length ? length - 1 : fromIndex;
+  if (fromIndex < 0) {
+    return -1;
   }
 
-  return fromIndex;
+  return fromIndex >= length ? length - 1 : fromIndex;
+};
+
+const getFromIndex = function getFromIndex(obj) {
+  const {args, length, extendFn, iterable} = obj;
+  const conditional = args.length > 3 || (args.length > 2 && toBoolean(extendFn) === false);
+
+  return conditional ? conditionalFromIndex({iterable, args, length}) : length - 1;
 };
 
 // eslint-disable jsdoc/check-param-names
