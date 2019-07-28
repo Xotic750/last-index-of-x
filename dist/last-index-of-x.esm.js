@@ -1,5 +1,3 @@
-function _newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
-
 import numberIsNaN from 'is-nan-x';
 import findLastIndex from 'find-last-index-x';
 import isString from 'is-string';
@@ -11,8 +9,21 @@ import calcFromIndexRight from 'calculate-from-index-right-x';
 import splitIfBoxedBug from 'split-if-boxed-bug-x';
 import attempt from 'attempt-x';
 import toBoolean from 'to-boolean-x';
+import objectCreate from 'object-create-x';
 var nlio = [].lastIndexOf;
 var nativeLastIndexOf = typeof nlio === 'function' && nlio;
+var _ref = '',
+    toLowerCase = _ref.toLowerCase;
+var mapExtendFn = objectCreate(null, {
+  samevalue: {
+    enumerable: true,
+    value: sameValue
+  },
+  samevaluezero: {
+    enumerable: true,
+    value: sameValueZero
+  }
+});
 
 var test1 = function test1() {
   var res = attempt.call([0, 1], nativeLastIndexOf, 0, -3);
@@ -58,22 +69,22 @@ var isWorking = toBoolean(nativeLastIndexOf) && test1() && test2() && test3() &&
 
 var implementation = function implementation() {
   return function lastIndexOf(searchElement) {
-    /* eslint-disable-next-line babel/no-invalid-this */
     var length = toLength(this.length);
+    /* eslint-disable-line babel/no-invalid-this */
 
     if (length < 1) {
       return -1;
     }
-    /* eslint-disable-next-line prefer-rest-params */
-
 
     var i = arguments[1];
+    /* eslint-disable-line prefer-rest-params */
 
     while (i >= 0) {
-      /* eslint-disable-next-line babel/no-invalid-this */
-      if (i in this && searchElement === this[i]) {
-        return i;
-      }
+      if (i in this && searchElement === this[i]
+      /* eslint-disable-line babel/no-invalid-this */
+      ) {
+          return i;
+        }
 
       i -= 1;
     }
@@ -108,6 +119,74 @@ var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex
   }
 
   return -1;
+};
+
+var getExtendFn = function getExtendFn(extend) {
+  return isString(extend) ? mapExtendFn[toLowerCase.call(extend)] : null;
+};
+
+var getExtendValue = function getExtendValue(args) {
+  return args.length > 2 && args.length > 3 ? args[3] : args[2];
+};
+
+var runFindIndex = function runFindIndex(obj) {
+  var fromIndex = obj.fromIndex,
+      length = obj.length,
+      iterable = obj.iterable,
+      searchElement = obj.searchElement,
+      extendFn = obj.extendFn;
+  return fromIndex < length - 1 ? findLastIdxFrom(iterable, searchElement, fromIndex, extendFn) : findLastIndex(iterable, function iteratee(element, index) {
+    return index in iterable && extendFn(searchElement, element);
+  });
+};
+
+var runExtendFn = function runExtendFn(obj) {
+  var length = obj.length,
+      args = obj.args,
+      iterable = obj.iterable,
+      searchElement = obj.searchElement,
+      extendFn = obj.extendFn;
+  var fromIndex = length - 1;
+
+  if (args.length > 3) {
+    fromIndex = calcFromIndexRight(iterable, args[2]);
+
+    if (fromIndex < 0) {
+      return -1;
+    }
+
+    if (fromIndex >= length) {
+      fromIndex = length - 1;
+    }
+  }
+
+  return runFindIndex({
+    fromIndex: fromIndex,
+    length: length,
+    iterable: iterable,
+    searchElement: searchElement,
+    extendFn: extendFn
+  });
+};
+
+var getFromIndex = function getFromIndex(obj) {
+  var args = obj.args,
+      length = obj.length,
+      extendFn = obj.extendFn,
+      iterable = obj.iterable;
+  var fromIndex = length - 1;
+
+  if (args.length > 3 || args.length > 2 && toBoolean(extendFn) === false) {
+    fromIndex = calcFromIndexRight(iterable, args[2]);
+
+    if (fromIndex < 0) {
+      return -1;
+    }
+
+    fromIndex = fromIndex >= length ? length - 1 : fromIndex;
+  }
+
+  return fromIndex;
 }; // eslint-disable jsdoc/check-param-names
 // noinspection JSCommentMatchesSignature
 
@@ -134,8 +213,6 @@ var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex
 
 
 var lastIndexOf = function lastIndexOf(array, searchElement) {
-  var _this = this;
-
   var object = toObject(array);
   var iterable = splitIfBoxedBug(object);
   var length = toLength(iterable.length);
@@ -144,63 +221,31 @@ var lastIndexOf = function lastIndexOf(array, searchElement) {
     return -1;
   }
 
-  var argLength = arguments.length;
-  /* eslint-disable-next-line prefer-rest-params */
+  var extend = getExtendValue(arguments);
+  /* eslint-disable-line prefer-rest-params */
 
-  var extend = argLength > 2 && argLength > 3 ? arguments[3] : arguments[2];
-  var extendFn;
-
-  if (isString(extend)) {
-    extend = extend.toLowerCase();
-
-    if (extend === 'samevalue') {
-      extendFn = sameValue;
-    } else if (extend === 'samevaluezero') {
-      extendFn = sameValueZero;
-    }
-  }
-
-  var fromIndex = length - 1;
+  var extendFn = getExtendFn(extend);
 
   if (extendFn && (searchElement === 0 || numberIsNaN(searchElement))) {
-    if (argLength > 3) {
-      /* eslint-disable-next-line prefer-rest-params */
-      fromIndex = calcFromIndexRight(iterable, arguments[2]);
-
-      if (fromIndex < 0) {
-        return -1;
-      }
-
-      if (fromIndex >= length) {
-        fromIndex = length - 1;
-      }
-    }
-
-    if (fromIndex < length - 1) {
-      return findLastIdxFrom(iterable, searchElement, fromIndex, extendFn);
-    }
-
-    return findLastIndex(iterable, function (element, index) {
-      _newArrowCheck(this, _this);
-
-      return index in iterable && extendFn(searchElement, element);
-    }.bind(this));
+    return runExtendFn({
+      length: length,
+      args: arguments,
+      iterable: iterable,
+      searchElement: searchElement,
+      extendFn: extendFn
+    });
+    /* eslint-disable-line prefer-rest-params */
   }
 
-  if (argLength > 3 || argLength > 2 && Boolean(extendFn) === false) {
-    /* eslint-disable-next-line prefer-rest-params */
-    fromIndex = calcFromIndexRight(iterable, arguments[2]);
+  var fromIndex = getFromIndex({
+    args: arguments,
+    length: length,
+    extendFn: extendFn,
+    iterable: iterable
+  });
+  /* eslint-disable-line prefer-rest-params */
 
-    if (fromIndex < 0) {
-      return -1;
-    }
-
-    if (fromIndex >= length) {
-      fromIndex = length - 1;
-    }
-  }
-
-  return pLastIndexOf.call(iterable, searchElement, fromIndex);
+  return fromIndex < 0 ? -1 : pLastIndexOf.call(iterable, searchElement, fromIndex);
 };
 
 export default lastIndexOf;

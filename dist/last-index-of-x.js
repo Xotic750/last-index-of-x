@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-2017",
-  "date": "2019-07-28T15:51:18.521Z",
+  "date": "2019-07-28T16:45:06.652Z",
   "describe": "",
   "description": "An extended ES6 lastIndexOf.",
   "file": "last-index-of-x.js",
-  "hash": "a98a540f95af9bf22411",
+  "hash": "9ee8b5db004ebe241d7c",
   "license": "MIT",
   "version": "3.0.9"
 }
@@ -120,7 +120,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -128,10 +128,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/*!
+ * is-primitive <https://github.com/jonschlinkert/is-primitive>
+ *
+ * Copyright (c) 2014-present, Jon Schlinkert.
+ * Released under the MIT License.
+ */
+
+
+
+module.exports = function isPrimitive(val) {
+  if (typeof val === 'object') {
+    return val === null;
+  }
+  return typeof val !== 'function';
+};
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
 var toStr = Object.prototype.toString;
-var hasSymbols = __webpack_require__(4)();
+var hasSymbols = __webpack_require__(7)();
 
 if (hasSymbols) {
 	var symToStr = Symbol.prototype.toString;
@@ -163,28 +185,6 @@ if (hasSymbols) {
 		return  false && false;
 	};
 }
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/*!
- * is-primitive <https://github.com/jonschlinkert/is-primitive>
- *
- * Copyright (c) 2014-present, Jon Schlinkert.
- * Released under the MIT License.
- */
-
-
-
-module.exports = function isPrimitive(val) {
-  if (typeof val === 'object') {
-    return val === null;
-  }
-  return typeof val !== 'function';
-};
 
 
 /***/ }),
@@ -221,6 +221,30 @@ module.exports = function isString(value) {
 "use strict";
 
 
+var toStr = Object.prototype.toString;
+
+module.exports = function isArguments(value) {
+	var str = toStr.call(value);
+	var isArgs = str === '[object Arguments]';
+	if (!isArgs) {
+		isArgs = str !== '[object Array]' &&
+			value !== null &&
+			typeof value === 'object' &&
+			typeof value.length === 'number' &&
+			value.length >= 0 &&
+			toStr.call(value.callee) === '[object Function]';
+	}
+	return isArgs;
+};
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 var getDay = Date.prototype.getDay;
 var tryDateObject = function tryDateObject(value) {
 	try {
@@ -242,14 +266,91 @@ module.exports = function isDateObject(value) {
 
 
 /***/ }),
-/* 4 */
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
+var toStr = Object.prototype.toString;
+
+var isStandardArguments = function isArguments(value) {
+	if (hasToStringTag && value && typeof value === 'object' && Symbol.toStringTag in value) {
+		return false;
+	}
+	return toStr.call(value) === '[object Arguments]';
+};
+
+var isLegacyArguments = function isArguments(value) {
+	if (isStandardArguments(value)) {
+		return true;
+	}
+	return value !== null &&
+		typeof value === 'object' &&
+		typeof value.length === 'number' &&
+		value.length >= 0 &&
+		toStr.call(value) !== '[object Array]' &&
+		toStr.call(value.callee) === '[object Function]';
+};
+
+var supportsStandardArguments = (function () {
+	return isStandardArguments(arguments);
+}());
+
+isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
+
+module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var slice = Array.prototype.slice;
+var isArgs = __webpack_require__(3);
+
+var origKeys = Object.keys;
+var keysShim = origKeys ? function keys(o) { return origKeys(o); } : __webpack_require__(10);
+
+var originalKeys = Object.keys;
+
+keysShim.shim = function shimObjectKeys() {
+	if (Object.keys) {
+		var keysWorksWithArguments = (function () {
+			// Safari 5.0 bug
+			var args = Object.keys(arguments);
+			return args && args.length === arguments.length;
+		}(1, 2));
+		if (!keysWorksWithArguments) {
+			Object.keys = function keys(object) { // eslint-disable-line func-name-matching
+				if (isArgs(object)) {
+					return originalKeys(slice.call(object));
+				}
+				return originalKeys(object);
+			};
+		}
+	} else {
+		Object.keys = keysShim;
+	}
+	return Object.keys || keysShim;
+};
+
+module.exports = keysShim;
+
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {
 
 var origSymbol = global.Symbol;
-var hasSymbolSham = __webpack_require__(6);
+var hasSymbolSham = __webpack_require__(9);
 
 module.exports = function hasNativeSymbols() {
 	if (typeof origSymbol !== 'function') { return false; }
@@ -260,10 +361,10 @@ module.exports = function hasNativeSymbols() {
 	return hasSymbolSham();
 };
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(5)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(8)))
 
 /***/ }),
-/* 5 */
+/* 8 */
 /***/ (function(module, exports) {
 
 var g;
@@ -289,7 +390,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 6 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -338,7 +439,136 @@ module.exports = function hasSymbols() {
 
 
 /***/ }),
-/* 7 */
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var keysShim;
+if (!Object.keys) {
+	// modified from https://github.com/es-shims/es5-shim
+	var has = Object.prototype.hasOwnProperty;
+	var toStr = Object.prototype.toString;
+	var isArgs = __webpack_require__(3); // eslint-disable-line global-require
+	var isEnumerable = Object.prototype.propertyIsEnumerable;
+	var hasDontEnumBug = !isEnumerable.call({ toString: null }, 'toString');
+	var hasProtoEnumBug = isEnumerable.call(function () {}, 'prototype');
+	var dontEnums = [
+		'toString',
+		'toLocaleString',
+		'valueOf',
+		'hasOwnProperty',
+		'isPrototypeOf',
+		'propertyIsEnumerable',
+		'constructor'
+	];
+	var equalsConstructorPrototype = function (o) {
+		var ctor = o.constructor;
+		return ctor && ctor.prototype === o;
+	};
+	var excludedKeys = {
+		$applicationCache: true,
+		$console: true,
+		$external: true,
+		$frame: true,
+		$frameElement: true,
+		$frames: true,
+		$innerHeight: true,
+		$innerWidth: true,
+		$onmozfullscreenchange: true,
+		$onmozfullscreenerror: true,
+		$outerHeight: true,
+		$outerWidth: true,
+		$pageXOffset: true,
+		$pageYOffset: true,
+		$parent: true,
+		$scrollLeft: true,
+		$scrollTop: true,
+		$scrollX: true,
+		$scrollY: true,
+		$self: true,
+		$webkitIndexedDB: true,
+		$webkitStorageInfo: true,
+		$window: true
+	};
+	var hasAutomationEqualityBug = (function () {
+		/* global window */
+		if (typeof window === 'undefined') { return false; }
+		for (var k in window) {
+			try {
+				if (!excludedKeys['$' + k] && has.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
+					try {
+						equalsConstructorPrototype(window[k]);
+					} catch (e) {
+						return true;
+					}
+				}
+			} catch (e) {
+				return true;
+			}
+		}
+		return false;
+	}());
+	var equalsConstructorPrototypeIfNotBuggy = function (o) {
+		/* global window */
+		if (typeof window === 'undefined' || !hasAutomationEqualityBug) {
+			return equalsConstructorPrototype(o);
+		}
+		try {
+			return equalsConstructorPrototype(o);
+		} catch (e) {
+			return false;
+		}
+	};
+
+	keysShim = function keys(object) {
+		var isObject = object !== null && typeof object === 'object';
+		var isFunction = toStr.call(object) === '[object Function]';
+		var isArguments = isArgs(object);
+		var isString = isObject && toStr.call(object) === '[object String]';
+		var theKeys = [];
+
+		if (!isObject && !isFunction && !isArguments) {
+			throw new TypeError('Object.keys called on a non-object');
+		}
+
+		var skipProto = hasProtoEnumBug && isFunction;
+		if (isString && object.length > 0 && !has.call(object, 0)) {
+			for (var i = 0; i < object.length; ++i) {
+				theKeys.push(String(i));
+			}
+		}
+
+		if (isArguments && object.length > 0) {
+			for (var j = 0; j < object.length; ++j) {
+				theKeys.push(String(j));
+			}
+		} else {
+			for (var name in object) {
+				if (!(skipProto && name === 'prototype') && has.call(object, name)) {
+					theKeys.push(String(name));
+				}
+			}
+		}
+
+		if (hasDontEnumBug) {
+			var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
+
+			for (var k = 0; k < dontEnums.length; ++k) {
+				if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
+					theKeys.push(dontEnums[k]);
+				}
+			}
+		}
+		return theKeys;
+	};
+}
+module.exports = keysShim;
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -362,7 +592,7 @@ var is_nan_x_esm_isNaN = function isNaN(value) {
 
 
 // EXTERNAL MODULE: ./node_modules/is-symbol/index.js
-var is_symbol = __webpack_require__(0);
+var is_symbol = __webpack_require__(1);
 var is_symbol_default = /*#__PURE__*/__webpack_require__.n(is_symbol);
 
 // CONCATENATED MODULE: ./node_modules/attempt-x/dist/attempt-x.esm.js
@@ -422,11 +652,11 @@ var hasSymbolSupport = attempt_x_esm(function () {
 
 
 // EXTERNAL MODULE: ./node_modules/is-primitive/index.js
-var is_primitive = __webpack_require__(1);
+var is_primitive = __webpack_require__(0);
 var is_primitive_default = /*#__PURE__*/__webpack_require__.n(is_primitive);
 
 // EXTERNAL MODULE: ./node_modules/is-date-object/index.js
-var is_date_object = __webpack_require__(3);
+var is_date_object = __webpack_require__(4);
 var is_date_object_default = /*#__PURE__*/__webpack_require__.n(is_date_object);
 
 // CONCATENATED MODULE: ./node_modules/to-boolean-x/dist/to-boolean-x.esm.js
@@ -1792,8 +2022,1546 @@ var calculate_from_index_right_x_esm_calcFromIndexRight = function calcFromIndex
 /* harmony default export */ var calculate_from_index_right_x_esm = (calculate_from_index_right_x_esm_calcFromIndexRight);
 
 
+// CONCATENATED MODULE: ./node_modules/array-for-each-x/dist/array-for-each-x.esm.js
+function array_for_each_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
+
+
+
+
+
+
+
+var nfe = [].forEach;
+var nativeForEach = typeof nfe === 'function' && nfe;
+
+var array_for_each_x_esm_test1 = function test1() {
+  var _this = this;
+
+  var spy = 0;
+  var res = attempt_x_esm.call([1, 2], nativeForEach, function (item) {
+    array_for_each_x_esm_newArrowCheck(this, _this);
+
+    spy += item;
+  }.bind(this));
+  return res.threw === false && typeof res.value === 'undefined' && spy === 3;
+};
+
+var array_for_each_x_esm_test2 = function test2() {
+  var _this2 = this;
+
+  var spy = '';
+  var res = attempt_x_esm.call({}.constructor('abc'), nativeForEach, function (item) {
+    array_for_each_x_esm_newArrowCheck(this, _this2);
+
+    spy += item;
+  }.bind(this));
+  return res.threw === false && typeof res.value === 'undefined' && spy === 'abc';
+};
+
+var array_for_each_x_esm_test3 = function test3() {
+  var spy = 0;
+  var res = attempt_x_esm.call(function getArgs() {
+    /* eslint-disable-next-line prefer-rest-params */
+    return arguments;
+  }(1, 2, 3), nativeForEach, function spyAdd1(item) {
+    spy += item;
+  });
+  return res.threw === false && typeof res.value === 'undefined' && spy === 6;
+};
+
+var array_for_each_x_esm_test4 = function test4() {
+  var spy = 0;
+  var res = attempt_x_esm.call({
+    0: 1,
+    1: 2,
+    3: 3,
+    4: 4,
+    length: 4
+  }, nativeForEach, function spyAdd2(item) {
+    spy += item;
+  });
+  return res.threw === false && typeof res.value === 'undefined' && spy === 6;
+};
+
+var array_for_each_x_esm_test5 = function test5() {
+  var doc = typeof document !== 'undefined' && document;
+
+  if (doc) {
+    var spy = null;
+    var fragment = doc.createDocumentFragment();
+    var div = doc.createElement('div');
+    fragment.appendChild(div);
+    var res = attempt_x_esm.call(fragment.childNodes, nativeForEach, function spyAssign(item) {
+      spy = item;
+    });
+    return res.threw === false && typeof res.value === 'undefined' && spy === div;
+  }
+
+  return true;
+};
+
+var array_for_each_x_esm_test6 = function test6() {
+  var isStrict = function returnIsStrict() {
+    /* eslint-disable-next-line babel/no-invalid-this */
+    return true.constructor(this) === false;
+  }();
+
+  if (isStrict) {
+    var spy = null;
+    var res = attempt_x_esm.call([1], nativeForEach, function thisTest() {
+      /* eslint-disable-next-line babel/no-invalid-this */
+      spy = typeof this === 'string';
+    }, 'x');
+    return res.threw === false && typeof res.value === 'undefined' && spy === true;
+  }
+
+  return true;
+};
+
+var array_for_each_x_esm_test7 = function test7() {
+  var spy = {};
+  var fn = 'return nativeForEach.call("foo", function (_, __, context) {' + 'if (castBoolean(context) === false || typeof context !== "object") {' + 'spy.value = true;}});';
+  /* eslint-disable-next-line no-new-func */
+
+  var res = attempt_x_esm(Function('nativeForEach', 'spy', 'castBoolean', fn), nativeForEach, spy, true.constructor);
+  return res.threw === false && typeof res.value === 'undefined' && spy.value !== true;
+};
+
+var isWorking = true.constructor(nativeForEach) && array_for_each_x_esm_test1() && array_for_each_x_esm_test2() && array_for_each_x_esm_test3() && array_for_each_x_esm_test4() && array_for_each_x_esm_test5() && array_for_each_x_esm_test6() && array_for_each_x_esm_test7();
+
+var array_for_each_x_esm_patchedNative = function patchedNative() {
+  return function forEach(array, callBack
+  /* , thisArg */
+  ) {
+    require_object_coercible_x_esm(array);
+    var args = [assert_is_function_x_esm(callBack)];
+
+    if (arguments.length > 2) {
+      /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
+      args[1] = arguments[2];
+    }
+
+    return nativeForEach.apply(array, args);
+  };
+};
+
+var array_for_each_x_esm_implementation = function implementation() {
+  return function forEach(array, callBack
+  /* , thisArg */
+  ) {
+    var object = to_object_x_esm(array); // If no callback function or if callback is not a callable function
+
+    assert_is_function_x_esm(callBack);
+    var iterable = split_if_boxed_bug_x_esm(object);
+    var length = to_length_x_esm(iterable.length);
+    /* eslint-disable-next-line no-void,prefer-rest-params */
+
+    var thisArg = arguments.length > 2 ? arguments[2] : void 0;
+    var noThis = typeof thisArg === 'undefined';
+
+    for (var i = 0; i < length; i += 1) {
+      if (i in iterable) {
+        if (noThis) {
+          callBack(iterable[i], i, object);
+        } else {
+          callBack.call(thisArg, iterable[i], i, object);
+        }
+      }
+    }
+  };
+};
+/**
+ * This method executes a provided function once for each array element.
+ *
+ * @param {Array} array - The array to iterate over.
+ * @param {Function} callBack - Function to execute for each element.
+ * @param {*} [thisArg] - Value to use as this when executing callback.
+ * @throws {TypeError} If array is null or undefined.
+ * @throws {TypeError} If callBack is not a function.
+ */
+
+
+var $forEach = isWorking ? array_for_each_x_esm_patchedNative() : array_for_each_x_esm_implementation();
+/* harmony default export */ var array_for_each_x_esm = ($forEach);
+
+
+// CONCATENATED MODULE: ./node_modules/to-property-key-x/dist/to-property-key-x.esm.js
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+
+
+
+/**
+ * This method Converts argument to a value that can be used as a property key.
+ *
+ * @param {*} argument - The argument to convert to a property key.
+ * @throws {TypeError} If argument is not a symbol and is not coercible to a string.
+ * @returns {string|Symbol} The converted argument.
+ */
+
+var to_property_key_x_esm_toPropertyKey = function toPropertyKey(argument) {
+  var key = to_primitive_x_esm(argument, String);
+  return has_symbol_support_x_esm && _typeof(key) === 'symbol' ? key : to_string_x_esm(key);
+};
+
+/* harmony default export */ var to_property_key_x_esm = (to_property_key_x_esm_toPropertyKey);
+
+
+// CONCATENATED MODULE: ./node_modules/has-own-property-x/dist/has-own-property-x.esm.js
+
+
+var hop = {}.hasOwnProperty;
+/**
+ * The `hasOwnProperty` method returns a boolean indicating whether
+ * the `object` has the specified `property`. Does not attempt to fix known
+ * issues in older browsers, but does ES6ify the method.
+ *
+ * @param {!object} object - The object to test.
+ * @throws {TypeError} If object is null or undefined.
+ * @param {string|number|Symbol} property - The name or Symbol of the property to test.
+ * @returns {boolean} `true` if the property is set on `object`, else `false`.
+ */
+
+var has_own_property_x_esm_hasOwnProperty = function hasOwnProperty(object, property) {
+  return hop.call(to_object_x_esm(object), to_property_key_x_esm(property));
+};
+
+/* harmony default export */ var has_own_property_x_esm = (has_own_property_x_esm_hasOwnProperty);
+
+
+// CONCATENATED MODULE: ./node_modules/assert-is-object-x/dist/assert-is-object-x.esm.js
+
+
+/**
+ * Tests `value` to see if it is an object, throws a `TypeError` if it is
+ * not. Otherwise returns the `value`.
+ *
+ * @param {*} value - The argument to be tested.
+ * @throws {TypeError} Throws if `value` is not an object.
+ * @returns {*} Returns `value` if it is an object.
+ */
+
+var assert_is_object_x_esm_assertIsObject = function assertIsObject(value) {
+  if (is_primitive_default()(value)) {
+    throw new TypeError("".concat(to_string_symbols_supported_x_esm(value), " is not an object"));
+  }
+
+  return value;
+};
+
+/* harmony default export */ var assert_is_object_x_esm = (assert_is_object_x_esm_assertIsObject);
+
+
+// CONCATENATED MODULE: ./node_modules/object-define-property-x/dist/object-define-property-x.esm.js
+
+
+
+
+
+
+var ObjectCtr = {}.constructor;
+var object_define_property_x_esm_castBoolean = true.constructor;
+var nd = ObjectCtr.defineProperty;
+var nativeDefProp = typeof nd === 'function' && nd;
+var definePropertyFallback;
+
+var toPropertyDescriptor = function _toPropertyDescriptor(desc) {
+  var object = to_object_x_esm(desc);
+  var descriptor = {};
+
+  if (has_own_property_x_esm(object, 'enumerable')) {
+    descriptor.enumerable = object_define_property_x_esm_castBoolean(object.enumerable);
+  }
+
+  if (has_own_property_x_esm(object, 'configurable')) {
+    descriptor.configurable = object_define_property_x_esm_castBoolean(object.configurable);
+  }
+
+  if (has_own_property_x_esm(object, 'value')) {
+    descriptor.value = object.value;
+  }
+
+  if (has_own_property_x_esm(object, 'writable')) {
+    descriptor.writable = object_define_property_x_esm_castBoolean(object.writable);
+  }
+
+  if (has_own_property_x_esm(object, 'get')) {
+    var getter = object.get;
+
+    if (typeof getter !== 'undefined' && is_function_x_esm(getter) === false) {
+      throw new TypeError('getter must be a function');
+    }
+
+    descriptor.get = getter;
+  }
+
+  if (has_own_property_x_esm(object, 'set')) {
+    var setter = object.set;
+
+    if (typeof setter !== 'undefined' && is_function_x_esm(setter) === false) {
+      throw new TypeError('setter must be a function');
+    }
+
+    descriptor.set = setter;
+  }
+
+  if ((has_own_property_x_esm(descriptor, 'get') || has_own_property_x_esm(descriptor, 'set')) && (has_own_property_x_esm(descriptor, 'value') || has_own_property_x_esm(descriptor, 'writable'))) {
+    throw new TypeError('Invalid property descriptor. Cannot both specify accessors and a value or writable attribute');
+  }
+
+  return descriptor;
+}; // ES5 15.2.3.6
+// http://es5.github.com/#x15.2.3.6
+// Patch for WebKit and IE8 standard mode
+// Designed by hax <hax.github.com>
+// related issue: https://github.com/es-shims/es5-shim/issues#issue/5
+// IE8 Reference:
+//     http://msdn.microsoft.com/en-us/library/dd282900.aspx
+//     http://msdn.microsoft.com/en-us/library/dd229916.aspx
+// WebKit Bugs:
+//     https://bugs.webkit.org/show_bug.cgi?id=36423
+
+/**
+ * This method defines a new property directly on an object, or modifies an
+ * existing property on an object, and returns the object.
+ *
+ * @param {object} object - The object on which to define the property.
+ * @param {string} property - The name of the property to be defined or modified.
+ * @param {object} descriptor - The descriptor for the property being defined or modified.
+ * @returns {object} The object that was passed to the function.
+ * });.
+ */
+
+
+var $defineProperty; // check whether defineProperty works if it's given. Otherwise, shim partially.
+
+if (nativeDefProp) {
+  var testWorksWith = function _testWorksWith(object) {
+    var testResult = attempt_x_esm(nativeDefProp, object, 'sentinel', {});
+    return testResult.threw === false && testResult.value === object && 'sentinel' in object;
+  };
+
+  var object_define_property_x_esm_doc = typeof document !== 'undefined' && document;
+
+  if (testWorksWith({}) && (object_define_property_x_esm_castBoolean(object_define_property_x_esm_doc) === false || testWorksWith(object_define_property_x_esm_doc.createElement('div')))) {
+    $defineProperty = function defineProperty(object, property, descriptor) {
+      return nativeDefProp(assert_is_object_x_esm(object), to_property_key_x_esm(property), toPropertyDescriptor(descriptor));
+    };
+  } else {
+    definePropertyFallback = nativeDefProp;
+  }
+}
+
+if (object_define_property_x_esm_castBoolean(nativeDefProp) === false || definePropertyFallback) {
+  var prototypeOfObject = ObjectCtr.prototype; // If JS engine supports accessors creating shortcuts.
+
+  var supportsAccessors = has_own_property_x_esm(prototypeOfObject, '__defineGetter__');
+  /* eslint-disable-next-line no-underscore-dangle */
+
+  var defineGetter = supportsAccessors && prototypeOfObject.__defineGetter_;
+  /* eslint-disable-next-line no-underscore-dangle,no-restricted-properties */
+
+  var defineSetter = supportsAccessors && prototypeOfObject.__defineSetter__;
+  /* eslint-disable-next-line no-underscore-dangle */
+
+  var lookupGetter = supportsAccessors && prototypeOfObject.__lookupGetter__;
+  /* eslint-disable-next-line no-underscore-dangle */
+
+  var lookupSetter = supportsAccessors && prototypeOfObject.__lookupSetter__;
+
+  $defineProperty = function defineProperty(object, property, descriptor) {
+    assert_is_object_x_esm(object);
+    var propKey = to_property_key_x_esm(property);
+    var propDesc = toPropertyDescriptor(descriptor); // make a valiant attempt to use the real defineProperty for IE8's DOM elements.
+
+    if (definePropertyFallback) {
+      var result = attempt_x_esm.call(ObjectCtr, definePropertyFallback, object, propKey, propDesc);
+
+      if (result.threw === false) {
+        return result.value;
+      } // try the shim if the real one doesn't work
+
+    } // If it's a data property.
+
+
+    if (has_own_property_x_esm(propDesc, 'value')) {
+      // fail silently if 'writable', 'enumerable', or 'configurable' are requested but not supported
+      if (supportsAccessors && (lookupGetter.call(object, propKey) || lookupSetter.call(object, propKey))) {
+        // As accessors are supported only on engines implementing
+        // `__proto__` we can safely override `__proto__` while defining
+        // a property to make sure that we don't hit an inherited accessor.
+
+        /* eslint-disable-next-line no-proto */
+        var prototype = object.__proto__;
+        /* eslint-disable-next-line no-proto */
+
+        object.__proto__ = prototypeOfObject; // Deleting a property anyway since getter / setter may be defined on object itself.
+
+        delete object[propKey];
+        object[propKey] = propDesc.value; // Setting original `__proto__` back now.
+
+        /* eslint-disable-next-line no-proto */
+
+        object.__proto__ = prototype;
+      } else {
+        object[propKey] = propDesc.value;
+      }
+    } else {
+      if (supportsAccessors === false && (propDesc.get || propDesc.set)) {
+        throw new TypeError('getters & setters can not be defined on this javascript engine');
+      } // If we got that far then getters and setters can be defined !!
+
+
+      if (propDesc.get) {
+        defineGetter.call(object, propKey, propDesc.get);
+      }
+
+      if (propDesc.set) {
+        defineSetter.call(object, propKey, propDesc.set);
+      }
+    }
+
+    return object;
+  };
+}
+
+var defProp = $defineProperty;
+/* harmony default export */ var object_define_property_x_esm = (defProp);
+
+
+// CONCATENATED MODULE: ./node_modules/is-array-x/dist/is-array-x.esm.js
+var is_array_x_esm_this = undefined;
+
+function is_array_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
+
+
+
+var nativeIsArray = [].isArray;
+var isArrayNative = typeof nativeIsArray === 'function' && nativeIsArray;
+var testRes = isArrayNative && attempt_x_esm(function () {
+  is_array_x_esm_newArrowCheck(this, is_array_x_esm_this);
+
+  return isArrayNative([]) === true && isArrayNative({
+    length: 0
+  }) === false;
+}.bind(undefined));
+
+var isArrayFn = function iife() {
+  if (testRes && testRes.threw === false && testRes.value === true) {
+    return isArrayNative;
+  }
+  /**
+   * The isArray() function determines whether the passed value is an Array.
+   *
+   * @function isArray
+   * @param {*} [value] - The object to be checked..
+   * @returns {boolean} `true` if the object is an Array; otherwise, `false`.
+   */
+
+
+  return function isArray(value) {
+    return to_string_tag_x_esm(value) === '[object Array]';
+  };
+}();
+
+/* harmony default export */ var is_array_x_esm = (isArrayFn);
+
+
+// EXTERNAL MODULE: ./node_modules/is-arguments/index.js
+var is_arguments = __webpack_require__(5);
+var is_arguments_default = /*#__PURE__*/__webpack_require__.n(is_arguments);
+
+// CONCATENATED MODULE: ./node_modules/array-like-slice-x/dist/array-like-slice-x.esm.js
+
+
+
+
+
+var getMax = function _getMax(a, b) {
+  return a >= b ? a : b;
+};
+
+var array_like_slice_x_esm_getMin = function _getMin(a, b) {
+  return a <= b ? a : b;
+};
+
+var setRelative = function _setRelative(value, length) {
+  return value < 0 ? getMax(length + value, 0) : array_like_slice_x_esm_getMin(value, length);
+};
+/**
+ * The slice() method returns a shallow copy of a portion of an array into a new
+ * array object selected from begin to end (end not included). The original
+ * array will not be modified.
+ *
+ * @param {!object} arrayLike - The array like object to slice.
+ * @param {number} [start] - Zero-based index at which to begin extraction.
+ *  A negative index can be used, indicating an offset from the end of the
+ *  sequence. Running slice(-2) extracts the last two elements in the sequence.
+ *  If begin is undefined, slice begins from index 0.
+ * @param {number} [end] - Zero-based index before which to end extraction.
+ *  Slice extracts up to but not including end. For example, slice([0,1,2,3,4],1,4)
+ *  extracts the second element through the fourth element (elements indexed
+ *  1, 2, and 3).
+ *  A negative index can be used, indicating an offset from the end of the
+ *  sequence. Running slice(2,-1) extracts the third element through the second-to-last
+ *  element in the sequence.
+ *  If end is omitted, slice extracts through the end of the sequence (arr.length).
+ *  If end is greater than the length of the sequence, slice extracts through
+ *  the end of the sequence (arr.length).
+ * @returns {Array} A new array containing the extracted elements.
+ */
+
+
+var array_like_slice_x_esm_slice = function slice(arrayLike, start, end) {
+  var iterable = split_if_boxed_bug_x_esm(to_object_x_esm(arrayLike));
+  var length = to_length_x_esm(iterable.length);
+  var k = setRelative(to_integer_x_esm(start), length);
+  var relativeEnd = typeof end === 'undefined' ? length : to_integer_x_esm(end);
+  var finalEnd = setRelative(relativeEnd, length);
+  var val = [];
+  val.length = getMax(finalEnd - k, 0);
+  var next = 0;
+
+  while (k < finalEnd) {
+    if (k in iterable) {
+      val[next] = iterable[k];
+    }
+
+    next += 1;
+    k += 1;
+  }
+
+  return val;
+};
+
+/* harmony default export */ var array_like_slice_x_esm = (array_like_slice_x_esm_slice);
+
+
+// CONCATENATED MODULE: ./node_modules/is-object-like-x/dist/is-object-like-x.esm.js
+
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not a
+ * primitive and not a function.
+ *
+ * @param {*} [value] - The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ */
+
+var is_object_like_x_esm_isObjectLike = function isObjectLike(value) {
+  return is_primitive_default()(value) === false && is_function_x_esm(value, true) === false;
+};
+
+/* harmony default export */ var is_object_like_x_esm = (is_object_like_x_esm_isObjectLike);
+
+
+// CONCATENATED MODULE: ./node_modules/math-clamp-x/dist/math-clamp-x.esm.js
+ // eslint-disable jsdoc/check-param-names
+// noinspection JSCommentMatchesSignature
+
+/**
+ * This method clamp a number to min and max limits inclusive.
+ *
+ * @param {number} value - The number to be clamped.
+ * @param {number} [min=0] - The minimum number.
+ * @param {number} max - The maximum number.
+ * @throws {RangeError} If min > max.
+ * @returns {number} The clamped number.
+ */
+// eslint-enable jsdoc/check-param-names
+
+var math_clamp_x_esm_clamp = function clamp(value) {
+  var number = to_number_x_esm(value);
+  var argsLength = arguments.length;
+
+  if (argsLength < 2) {
+    return number;
+  }
+  /* eslint-disable-next-line prefer-rest-params */
+
+
+  var min = to_number_x_esm(arguments[1]);
+  var max;
+
+  if (argsLength < 3) {
+    max = min;
+    min = 0;
+  } else {
+    /* eslint-disable-next-line prefer-rest-params */
+    max = to_number_x_esm(arguments[2]);
+  }
+
+  if (min > max) {
+    throw new RangeError('"min" must be less than "max"');
+  }
+
+  if (number < min) {
+    return min;
+  }
+
+  if (number > max) {
+    return max;
+  }
+
+  return number;
+};
+
+/* harmony default export */ var math_clamp_x_esm = (math_clamp_x_esm_clamp);
+
+
+// CONCATENATED MODULE: ./node_modules/is-index-x/dist/is-index-x.esm.js
+
+
+
+
+var is_index_x_esm_MAX_SAFE_INTEGER = 9007199254740991;
+var reIsUint = /^(?:0|[1-9]\d*)$/;
+var rxTest = reIsUint.test;
+/**
+ * This method determines whether the passed value is a zero based index.
+ * JavaScript arrays are zero-indexed: the first element of an array is at
+ * index 0, and the last element is at the index equal to the value of the
+ * array's length property minus 1.
+ *
+ * @param {number|string} value - The value to be tested for being a zero based index.
+ * @param {number} [length=MAX_SAFE_INTEGER] - The length that sets the upper bound.
+ * @returns {boolean} A Boolean indicating whether or not the given value is a
+ * zero based index within bounds.
+ */
+
+var is_index_x_esm_isIndex = function isIndex(value, length) {
+  var string = to_string_symbols_supported_x_esm(value);
+
+  if (rxTest.call(reIsUint, string) === false) {
+    return false;
+  }
+
+  var number = to_number_x_esm(string);
+
+  if (arguments.length > 1) {
+    return number < math_clamp_x_esm(to_integer_x_esm(length), is_index_x_esm_MAX_SAFE_INTEGER);
+  }
+
+  return number < is_index_x_esm_MAX_SAFE_INTEGER;
+};
+
+/* harmony default export */ var is_index_x_esm = (is_index_x_esm_isIndex);
+
+
+// CONCATENATED MODULE: ./node_modules/property-is-enumerable-x/dist/property-is-enumerable-x.esm.js
+
+
+var propIsEnumerable = {}.propertyIsEnumerable;
+/**
+ * This method returns a Boolean indicating whether the specified property is
+ * enumerable. Does not attempt to fix bugs in IE<9 or old Opera, otherwise it
+ * does ES6ify the method.
+ *
+ * @param {!object} object - The object on which to test the property.
+ * @param {string|Symbol} property - The name of the property to test.
+ * @throws {TypeError} If target is null or undefined.
+ * @returns {boolean} A Boolean indicating whether the specified property is
+ *  enumerable.
+ */
+
+var property_is_enumerable_x_esm_propertyIsEnumerable = function propertyIsEnumerable(object, property) {
+  return propIsEnumerable.call(to_object_x_esm(object), to_property_key_x_esm(property));
+};
+
+/* harmony default export */ var property_is_enumerable_x_esm = (property_is_enumerable_x_esm_propertyIsEnumerable);
+
+
+// CONCATENATED MODULE: ./node_modules/object-get-own-property-descriptor-x/dist/object-get-own-property-descriptor-x.esm.js
+
+
+
+
+
+
+
+
+
+/** @type {ObjectConstructor} */
+
+var object_get_own_property_descriptor_x_esm_castObject = {}.constructor;
+/** @type {BooleanConstructor} */
+
+var object_get_own_property_descriptor_x_esm_castBoolean = true.constructor;
+var nativeGOPD = typeof object_get_own_property_descriptor_x_esm_castObject.getOwnPropertyDescriptor === 'function' && object_get_own_property_descriptor_x_esm_castObject.getOwnPropertyDescriptor;
+var getOPDFallback1;
+var getOPDFallback2; // ES5 15.2.3.3
+// http://es5.github.com/#x15.2.3.3
+
+var object_get_own_property_descriptor_x_esm_doesGOPDWork = function doesGOPDWork(object, prop) {
+  object[to_property_key_x_esm(prop)] = 0;
+  var testResult = attempt_x_esm(nativeGOPD, object, prop);
+  return testResult.threw === false && testResult.value.value === 0;
+}; // check whether getOwnPropertyDescriptor works if it's given. Otherwise, shim partially.
+
+/**
+ * This method returns a property descriptor for an own property (that is,
+ * one directly present on an object and not in the object's prototype chain)
+ * of a given object.
+ *
+ * @param {*} object - The object in which to look for the property.
+ * @param {*} property - The name of the property whose description is to be retrieved.
+ * @returns {object} A property descriptor of the given property if it exists on the object, undefined otherwise.
+ */
+
+
+var $getOwnPropertyDescriptor;
+
+if (nativeGOPD) {
+  var object_get_own_property_descriptor_x_esm_doc = typeof document !== 'undefined' && document;
+  var getOPDWorksOnDom = object_get_own_property_descriptor_x_esm_doc ? object_get_own_property_descriptor_x_esm_doesGOPDWork(object_get_own_property_descriptor_x_esm_doc.createElement('div'), 'sentinel') : true;
+
+  if (getOPDWorksOnDom) {
+    var object_get_own_property_descriptor_x_esm_res = attempt_x_esm(nativeGOPD, object_get_own_property_descriptor_x_esm_castObject('abc'), 1);
+    var worksWithStr = object_get_own_property_descriptor_x_esm_res.threw === false && object_get_own_property_descriptor_x_esm_res.value && object_get_own_property_descriptor_x_esm_res.value.value === 'b';
+
+    if (worksWithStr) {
+      var getOPDWorksOnObject = object_get_own_property_descriptor_x_esm_doesGOPDWork({}, 'sentinel');
+
+      if (getOPDWorksOnObject) {
+        var worksWithPrim = attempt_x_esm(nativeGOPD, 42, 'name').threw === false;
+        /* eslint-disable-next-line compat/compat */
+
+        var worksWithObjSym = has_symbol_support_x_esm && object_get_own_property_descriptor_x_esm_doesGOPDWork({}, object_get_own_property_descriptor_x_esm_castObject(Symbol('')));
+
+        if (worksWithObjSym) {
+          if (worksWithPrim) {
+            $getOwnPropertyDescriptor = nativeGOPD;
+          } else {
+            $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(object, property) {
+              return nativeGOPD(to_object_x_esm(object), property);
+            };
+          }
+        } else if (worksWithPrim) {
+          $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(object, property) {
+            return nativeGOPD(object, to_property_key_x_esm(property));
+          };
+        } else {
+          $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(object, property) {
+            return nativeGOPD(to_object_x_esm(object), to_property_key_x_esm(property));
+          };
+        }
+      } else {
+        getOPDFallback1 = nativeGOPD;
+      }
+    } else {
+      getOPDFallback2 = nativeGOPD;
+    }
+  }
+}
+
+if (object_get_own_property_descriptor_x_esm_castBoolean($getOwnPropertyDescriptor) === false || getOPDFallback1 || getOPDFallback2) {
+  var object_get_own_property_descriptor_x_esm_prototypeOfObject = object_get_own_property_descriptor_x_esm_castObject.prototype; // If JS engine supports accessors creating shortcuts.
+
+  var object_get_own_property_descriptor_x_esm_lookupGetter;
+  var object_get_own_property_descriptor_x_esm_lookupSetter;
+  var object_get_own_property_descriptor_x_esm_supportsAccessors = has_own_property_x_esm(object_get_own_property_descriptor_x_esm_prototypeOfObject, '__defineGetter__');
+
+  if (object_get_own_property_descriptor_x_esm_supportsAccessors) {
+    /* eslint-disable-next-line no-underscore-dangle */
+    var lg = object_get_own_property_descriptor_x_esm_prototypeOfObject.__lookupGetter__;
+    /* eslint-disable-next-line no-underscore-dangle */
+
+    var ls = object_get_own_property_descriptor_x_esm_prototypeOfObject.__lookupSetter__;
+
+    object_get_own_property_descriptor_x_esm_lookupGetter = function $lookupGetter(object, property) {
+      return lg.call(object, property);
+    };
+
+    object_get_own_property_descriptor_x_esm_lookupSetter = function $lookupSetter(object, property) {
+      return ls.call(object, property);
+    };
+  }
+
+  $getOwnPropertyDescriptor = function getOwnPropertyDescriptor(object, property) {
+    var obj = to_object_x_esm(object);
+    var propKey = to_property_key_x_esm(property);
+    var result; // make a valiant attempt to use the real getOwnPropertyDescriptor for I8's DOM elements.
+
+    if (getOPDFallback1) {
+      result = attempt_x_esm.call(object_get_own_property_descriptor_x_esm_castObject, getOPDFallback1, obj, propKey);
+
+      if (result.threw === false) {
+        return result.value;
+      } // try the shim if the real one doesn't work
+
+    }
+
+    var isStringIndex = is_string_default()(obj) && is_index_x_esm(propKey, obj.length);
+
+    if (getOPDFallback2 && isStringIndex === false) {
+      result = attempt_x_esm.call(object_get_own_property_descriptor_x_esm_castObject, getOPDFallback2, obj, propKey);
+
+      if (result.threw === false) {
+        return result.value;
+      } // try the shim if the real one doesn't work
+
+    }
+    /* eslint-disable-next-line no-void */
+
+
+    var descriptor = void 0; // If object does not owns property return undefined immediately.
+
+    if (isStringIndex === false && has_own_property_x_esm(obj, propKey) === false) {
+      return descriptor;
+    } // If object has a property then it's for sure `configurable`, and
+    // probably `enumerable`. Detect enumerability though.
+
+
+    descriptor = {
+      configurable: is_primitive_default()(object) === false && isStringIndex === false,
+      enumerable: property_is_enumerable_x_esm(obj, propKey)
+    }; // If JS engine supports accessor properties then property may be a
+    // getter or setter.
+
+    if (object_get_own_property_descriptor_x_esm_supportsAccessors) {
+      // Unfortunately `__lookupGetter__` will return a getter even
+      // if object has own non getter property along with a same named
+      // inherited getter. To avoid misbehavior we temporary remove
+      // `__proto__` so that `__lookupGetter__` will return getter only
+      // if it's owned by an object.
+
+      /* eslint-disable-next-line no-proto */
+      var prototype = obj.__proto__;
+      var notPrototypeOfObject = obj !== object_get_own_property_descriptor_x_esm_prototypeOfObject; // avoid recursion problem, breaking in Opera Mini when
+      // Object.getOwnPropertyDescriptor(Object.prototype, 'toString')
+      // or any other Object.prototype accessor
+
+      if (notPrototypeOfObject) {
+        /* eslint-disable-next-line no-proto */
+        obj.__proto__ = object_get_own_property_descriptor_x_esm_prototypeOfObject;
+      }
+
+      var getter = object_get_own_property_descriptor_x_esm_lookupGetter(obj, propKey);
+      var setter = object_get_own_property_descriptor_x_esm_lookupSetter(obj, propKey);
+
+      if (notPrototypeOfObject) {
+        // Once we have getter and setter we can put values back.
+
+        /* eslint-disable-next-line no-proto */
+        obj.__proto__ = prototype;
+      }
+
+      if (getter || setter) {
+        if (getter) {
+          descriptor.get = getter;
+        }
+
+        if (setter) {
+          descriptor.set = setter;
+        } // If it was accessor property we're done and return here
+        // in order to avoid adding `value` to the descriptor.
+
+
+        return descriptor;
+      }
+    } // If we got this far we know that object has an own property that is
+    // not an accessor so we set it as a value and return descriptor.
+
+
+    if (isStringIndex) {
+      descriptor.value = obj.charAt(propKey);
+      descriptor.writable = false;
+    } else {
+      descriptor.value = obj[propKey];
+      descriptor.writable = true;
+    }
+
+    return descriptor;
+  };
+}
+
+var gOPS = $getOwnPropertyDescriptor;
+/* harmony default export */ var object_get_own_property_descriptor_x_esm = (gOPS);
+
+
+// CONCATENATED MODULE: ./node_modules/is-regexp-x/dist/is-regexp-x.esm.js
+
+
+
+
+
+
+var regexExec = /none/.exec;
+var regexClass = '[object RegExp]';
+
+var tryRegexExecCall = function tryRegexExec(value, descriptor) {
+  try {
+    value.lastIndex = 0;
+    regexExec.call(value);
+    return true;
+  } catch (e) {
+    return false;
+  } finally {
+    object_define_property_x_esm(value, 'lastIndex', descriptor);
+  }
+};
+/**
+ * This method tests if a value is a regex.
+ *
+ * @param {*} value - The value to test.
+ * @returns {boolean} `true` if value is a regex; otherwise `false`.
+ */
+
+
+var is_regexp_x_esm_isRegex = function isRegex(value) {
+  if (is_object_like_x_esm(value) === false) {
+    return false;
+  }
+
+  if (has_to_string_tag_x_esm === false) {
+    return to_string_tag_x_esm(value) === regexClass;
+  }
+
+  var descriptor = object_get_own_property_descriptor_x_esm(value, 'lastIndex');
+  var hasLastIndexDataProperty = descriptor && has_own_property_x_esm(descriptor, 'value');
+
+  if (hasLastIndexDataProperty !== true) {
+    return false;
+  }
+
+  return tryRegexExecCall(value, descriptor);
+};
+
+/* harmony default export */ var is_regexp_x_esm = (is_regexp_x_esm_isRegex);
+
+
+// EXTERNAL MODULE: ./node_modules/object-keys/index.js
+var object_keys = __webpack_require__(6);
+var object_keys_default = /*#__PURE__*/__webpack_require__.n(object_keys);
+
+// CONCATENATED MODULE: ./node_modules/object-keys-x/dist/object-keys-x.esm.js
+
+
+
+
+
+
+
+
+
+
+var object_keys_x_esm_ObjectCtr = {}.constructor;
+var nativeKeys = typeof object_keys_x_esm_ObjectCtr.keys === 'function' && object_keys_x_esm_ObjectCtr.keys;
+var object_keys_x_esm_isWorking;
+var throwsWithNull;
+var object_keys_x_esm_worksWithPrim;
+var worksWithRegex;
+var worksWithArgs;
+var object_keys_x_esm_worksWithStr;
+
+if (nativeKeys) {
+  var isCorrectRes = function _isCorrectRes(r, length) {
+    return r.threw === false && is_array_x_esm(r.value) && r.value.length === length;
+  };
+
+  var either = function _either(r, a, b) {
+    var x = r.value[0];
+    var y = r.value[1];
+    return x === a && y === b || x === b && y === a;
+  };
+
+  var testObj = {
+    a: 1,
+    b: 2
+  };
+  var object_keys_x_esm_res = attempt_x_esm(nativeKeys, testObj);
+  object_keys_x_esm_isWorking = isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, 'a', 'b');
+
+  if (object_keys_x_esm_isWorking) {
+    testObj = Object('a');
+    testObj.y = 1;
+    object_keys_x_esm_res = attempt_x_esm(nativeKeys, testObj);
+    object_keys_x_esm_isWorking = isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, '0', 'y');
+  }
+
+  if (object_keys_x_esm_isWorking) {
+    throwsWithNull = attempt_x_esm(nativeKeys, null).threw;
+    object_keys_x_esm_worksWithPrim = isCorrectRes(attempt_x_esm(nativeKeys, 42), 0);
+    worksWithRegex = attempt_x_esm(nativeKeys, /a/g).threw === false;
+    object_keys_x_esm_res = attempt_x_esm(nativeKeys, function getArgs() {
+      /* eslint-disable-next-line prefer-rest-params */
+      return arguments;
+    }(1, 2));
+    worksWithArgs = isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, '0', '1');
+    object_keys_x_esm_res = attempt_x_esm(nativeKeys, Object('ab'));
+    object_keys_x_esm_worksWithStr = isCorrectRes(object_keys_x_esm_res, 2) && either(object_keys_x_esm_res, '0', '1');
+  }
+}
+/**
+ * This method returns an array of a given object's own enumerable properties,
+ * in the same order as that provided by a for...in loop (the difference being
+ * that a for-in loop enumerates properties in the prototype chain as well).
+ *
+ * @param {*} obj - The object of which the enumerable own properties are to be returned.
+ * @returns {Array} An array of strings that represent all the enumerable properties of the given object.
+ */
+
+
+var objectKeys;
+
+if (object_keys_x_esm_isWorking) {
+  if (throwsWithNull && object_keys_x_esm_worksWithPrim && worksWithRegex && worksWithArgs && object_keys_x_esm_worksWithStr) {
+    objectKeys = nativeKeys;
+  } else {
+    objectKeys = function keys(object) {
+      var obj = to_object_x_esm ? to_object_x_esm(object) : object;
+
+      if (worksWithArgs !== true && is_arguments_default()(obj)) {
+        obj = array_like_slice_x_esm(obj);
+      } else if (object_keys_x_esm_worksWithStr !== true && is_string_default()(obj)) {
+        obj = split_if_boxed_bug_x_esm(obj);
+      } else if (worksWithRegex !== true && is_regexp_x_esm(obj)) {
+        var regexKeys = [];
+        /* eslint-disable-next-line no-restricted-syntax */
+
+        for (var key in obj) {
+          // noinspection JSUnfilteredForInLoop
+          if (has_own_property_x_esm(obj, key)) {
+            regexKeys[regexKeys.length] = key;
+          }
+        }
+
+        return regexKeys;
+      }
+
+      return nativeKeys(obj);
+    };
+  }
+} else {
+  objectKeys = function keys(object) {
+    return object_keys_default()(to_object_x_esm(object));
+  };
+}
+
+var ok = objectKeys;
+/* harmony default export */ var object_keys_x_esm = (ok);
+
+
+// CONCATENATED MODULE: ./node_modules/array-filter-x/dist/array-filter-x.esm.js
+
+
+
+
+
+
+var nf = [].filter;
+var nativeFilter = typeof nf === 'function' && nf;
+
+var array_filter_x_esm_test1 = function test1() {
+  var spy = 0;
+  var res = attempt_x_esm.call([1, 2], nativeFilter, function spyAdd1(item) {
+    spy += item;
+    return false;
+  });
+  return res.threw === false && res.value && res.value.length === 0 && spy === 3;
+};
+
+var array_filter_x_esm_test2 = function test2() {
+  var spy = '';
+  var res = attempt_x_esm.call({}.constructor('abc'), nativeFilter, function spyAdd2(item, index) {
+    spy += item;
+    return index === 1;
+  });
+  return res.threw === false && res.value && res.value.length === 1 && res.value[0] === 'b' && spy === 'abc';
+};
+
+var array_filter_x_esm_test3 = function test3() {
+  var spy = 0;
+  var res = attempt_x_esm.call(function getArgs() {
+    /* eslint-disable-next-line prefer-rest-params */
+    return arguments;
+  }(1, 2, 3), nativeFilter, function spyAdd3(item, index) {
+    spy += item;
+    return index === 2;
+  });
+  return res.threw === false && res.value && res.value.length === 1 && res.value[0] === 3 && spy === 6;
+};
+
+var array_filter_x_esm_test4 = function test4() {
+  var spy = 0;
+  var res = attempt_x_esm.call({
+    0: 1,
+    1: 2,
+    3: 3,
+    4: 4,
+    length: 4
+  }, nativeFilter, function spyAdd4(item) {
+    spy += item;
+    return false;
+  });
+  return res.threw === false && res.value && res.value.length === 0 && spy === 6;
+};
+
+var array_filter_x_esm_test5 = function test5() {
+  var doc = typeof document !== 'undefined' && document;
+
+  if (doc) {
+    var spy = null;
+    var fragment = doc.createDocumentFragment();
+    var div = doc.createElement('div');
+    fragment.appendChild(div);
+    var res = attempt_x_esm.call(fragment.childNodes, nativeFilter, function spyAssign(item) {
+      spy = item;
+      return item;
+    });
+    return res.threw === false && res.value && res.value.length === 1 && res.value[0] === div && spy === div;
+  }
+
+  return true;
+};
+
+var array_filter_x_esm_test6 = function test6() {
+  var isStrict = function returnIsStrict() {
+    /* eslint-disable-next-line babel/no-invalid-this */
+    return true.constructor(this) === false;
+  }();
+
+  if (isStrict) {
+    var spy = null;
+    var res = attempt_x_esm.call([1], nativeFilter, function testThis() {
+      /* eslint-disable-next-line babel/no-invalid-this */
+      spy = typeof this === 'string';
+    }, 'x');
+    return res.threw === false && res.value && res.value.length === 0 && spy === true;
+  }
+
+  return true;
+};
+
+var array_filter_x_esm_test7 = function test7() {
+  var spy = {};
+  var fn = 'return nativeFilter.call("foo", function (_, __, context) {' + 'if (castBoolean(context) === false || typeof context !== "object") {' + 'spy.value = true;}});';
+  /* eslint-disable-next-line no-new-func */
+
+  var res = attempt_x_esm(Function('nativeFilter', 'spy', 'castBoolean', fn), nativeFilter, spy, true.constructor);
+  return res.threw === false && res.value && res.value.length === 0 && spy.value !== true;
+};
+
+var array_filter_x_esm_isWorking = true.constructor(nativeFilter) && array_filter_x_esm_test1() && array_filter_x_esm_test2() && array_filter_x_esm_test3() && array_filter_x_esm_test4() && array_filter_x_esm_test5() && array_filter_x_esm_test6() && array_filter_x_esm_test7();
+
+var array_filter_x_esm_patchedFilter = function patchedFilter() {
+  return function filter(array, callBack
+  /* , thisArg */
+  ) {
+    require_object_coercible_x_esm(array);
+    var args = [assert_is_function_x_esm(callBack)];
+
+    if (arguments.length > 2) {
+      /* eslint-disable-next-line prefer-rest-params,prefer-destructuring */
+      args[1] = arguments[2];
+    }
+
+    return nativeFilter.apply(array, args);
+  };
+};
+
+var array_filter_x_esm_implementation = function implementation() {
+  return function filter(array, callBack
+  /* , thisArg */
+  ) {
+    var object = to_object_x_esm(array); // If no callback function or if callback is not a callable function
+
+    assert_is_function_x_esm(callBack);
+    var iterable = split_if_boxed_bug_x_esm(object);
+    var length = to_length_x_esm(iterable.length);
+    /* eslint-disable-next-line prefer-rest-params,no-void */
+
+    var thisArg = arguments.length > 2 ? arguments[2] : void 0;
+    var noThis = typeof thisArg === 'undefined';
+    var result = [];
+
+    for (var i = 0; i < length; i += 1) {
+      if (i in iterable) {
+        var item = iterable[i];
+
+        if (noThis ? callBack(item, i, object) : callBack.call(thisArg, item, i, object)) {
+          result[result.length] = item;
+        }
+      }
+    }
+
+    return result;
+  };
+};
+/**
+ * This method creates a new array with all elements that pass the test
+ * implemented by the provided function.
+ *
+ * @param {Array} array - The array to iterate over.
+ * @param {Function} callBack - Function is a predicate, to test each element.
+ * @param {*} [thisArg] - Value to use as this when executing callback.
+ * @throws {TypeError} If array is null or undefined.
+ * @throws {TypeError} If callBack is not a function.
+ * @returns {Array} A new array with the elements that pass the test.
+ */
+
+
+var $filter = array_filter_x_esm_isWorking ? array_filter_x_esm_patchedFilter() : array_filter_x_esm_implementation();
+/* harmony default export */ var array_filter_x_esm = ($filter);
+
+
+// CONCATENATED MODULE: ./node_modules/get-own-property-symbols-x/dist/get-own-property-symbols-x.esm.js
+
+
+
+var nativeGOPS = {}.constructor.getOwnPropertySymbols;
+var get_own_property_symbols_x_esm_isWorking;
+
+if (has_symbol_support_x_esm && nativeGOPS && typeof nativeGOPS === 'function') {
+  /* eslint-disable-next-line compat/compat */
+  var get_own_property_symbols_x_esm_symbol = Symbol('');
+  var get_own_property_symbols_x_esm_testObj = {
+    a: 1
+  };
+  get_own_property_symbols_x_esm_testObj[get_own_property_symbols_x_esm_symbol] = 2;
+  var get_own_property_symbols_x_esm_r = attempt_x_esm(nativeGOPS, get_own_property_symbols_x_esm_testObj);
+  get_own_property_symbols_x_esm_isWorking = get_own_property_symbols_x_esm_r.threw === false && get_own_property_symbols_x_esm_r.value && get_own_property_symbols_x_esm_r.value.length === 1 && get_own_property_symbols_x_esm_r.value[0] === get_own_property_symbols_x_esm_symbol;
+}
+/**
+ * This method creates an array of all symbol properties found directly upon a
+ * given object.
+ *
+ * @param {object} obj - The object whose symbol properties are to be returned.
+ * @throws {TypeError} If target is null or undefined.
+ * @returns {Array} An array of all symbol properties found directly upon the
+ *  given object.
+ */
+
+
+var get_own_property_symbols_x_esm_getOwnPropertySymbols = function getOwnPropertySymbols(obj) {
+  var object = to_object_x_esm(obj);
+  return get_own_property_symbols_x_esm_isWorking ? nativeGOPS(object) : [];
+};
+
+/* harmony default export */ var get_own_property_symbols_x_esm = (get_own_property_symbols_x_esm_getOwnPropertySymbols);
+
+
+// CONCATENATED MODULE: ./node_modules/get-own-enumerable-property-symbols-x/dist/get-own-enumerable-property-symbols-x.esm.js
+function get_own_enumerable_property_symbols_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
+
+
+
+
+
+/**
+ * This method returns only the enumerable own property symbols of an object.
+ *
+ * @param {object} target - The target.
+ * @throws {TypeError} - If target is null or undefined.
+ * @returns {Array} The enumerable own property symbols.
+ */
+
+var get_own_enumerable_property_symbols_x_esm_getOwnEnumerablePropertySymbols = function getOwnEnumerablePropertySymbols(target) {
+  var _this = this;
+
+  var object = to_object_x_esm(target);
+  return array_filter_x_esm(get_own_property_symbols_x_esm(object), function (symbol) {
+    get_own_enumerable_property_symbols_x_esm_newArrowCheck(this, _this);
+
+    return property_is_enumerable_x_esm(object, symbol);
+  }.bind(this));
+};
+
+/* harmony default export */ var get_own_enumerable_property_symbols_x_esm = (get_own_enumerable_property_symbols_x_esm_getOwnEnumerablePropertySymbols);
+
+
+// CONCATENATED MODULE: ./node_modules/get-own-enumerable-keys-x/dist/get-own-enumerable-keys-x.esm.js
+
+
+
+var concat = [].concat;
+/**
+ * This method returns only the enumerable own keys of an object.
+ *
+ * @param {object} target - The target.
+ * @throws {TypeError} - If target is null or undefined.
+ * @returns {Array} The enumerable own keys.
+ */
+
+var get_own_enumerable_keys_x_esm_getOwnNonEnumerableKeys = function getOwnNonEnumerableKeys(target) {
+  var object = to_object_x_esm(target);
+  return concat.call(object_keys_x_esm(object), get_own_enumerable_property_symbols_x_esm(object));
+};
+
+/* harmony default export */ var get_own_enumerable_keys_x_esm = (get_own_enumerable_keys_x_esm_getOwnNonEnumerableKeys);
+
+
+// CONCATENATED MODULE: ./node_modules/object-define-properties-x/dist/object-define-properties-x.esm.js
+
+
+
+
+
+var object_define_properties_x_esm_defineProperty = object_define_property_x_esm;
+/**
+ * This method defines new or modifies existing properties directly on an
+ * object, returning the object.
+ *
+ * @param {object} object - The object on which to define or modify properties.
+ * @param {object} properties - An object whose own enumerable properties
+ *  constitute descriptors for the
+ * properties to be defined or modified.
+ * @returns {object} The object that was passed to the function.
+ */
+
+var object_define_properties_x_esm_defineProperties = function defineProperties(object, properties) {
+  assert_is_object_x_esm(object);
+  var props = to_object_x_esm(properties);
+  array_for_each_x_esm(get_own_enumerable_keys_x_esm(props), function defineProp(property) {
+    if (property !== '__proto__') {
+      object_define_property_x_esm(object, property, props[property]);
+    }
+  });
+  return object;
+};
+
+/* harmony default export */ var object_define_properties_x_esm = (object_define_properties_x_esm_defineProperties);
+
+
+// CONCATENATED MODULE: ./node_modules/object-create-x/dist/object-create-x.esm.js
+function object_create_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
+
+function object_create_x_esm_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { object_create_x_esm_typeof = function _typeof(obj) { return typeof obj; }; } else { object_create_x_esm_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return object_create_x_esm_typeof(obj); }
+
+
+
+
+/** @type {BooleanConstructor} */
+
+var object_create_x_esm_castBoolean = true.constructor;
+var nativeCreate = typeof Object.create === 'function' && Object.create;
+var object_create_x_esm_isWorking;
+
+if (nativeCreate) {
+  var object_create_x_esm_res = attempt_x_esm(nativeCreate, null);
+  object_create_x_esm_isWorking = object_create_x_esm_res.threw === false && object_create_x_esm_res.value && object_create_x_esm_typeof(object_create_x_esm_res.value) === 'object';
+
+  if (object_create_x_esm_isWorking) {
+    /* eslint-disable-next-line guard-for-in,no-restricted-syntax,no-unused-vars */
+    // noinspection LoopStatementThatDoesntLoopJS
+    for (var _ in object_create_x_esm_res.value) {
+      object_create_x_esm_isWorking = false;
+      break;
+    }
+  }
+
+  if (object_create_x_esm_isWorking) {
+    object_create_x_esm_res = attempt_x_esm(nativeCreate, null, {
+      test: {
+        value: true
+      }
+    });
+    object_create_x_esm_isWorking = object_create_x_esm_res.threw === false && object_create_x_esm_res.value && object_create_x_esm_typeof(object_create_x_esm_res.value) === 'object' && object_create_x_esm_res.value.test === true;
+  }
+
+  if (object_create_x_esm_isWorking) {
+    // Shape - superclass
+    var Shape = function Shape() {
+      // noinspection JSUnusedGlobalSymbols
+      this.x = 0; // noinspection JSUnusedGlobalSymbols
+
+      this.y = 0;
+    }; // superclass method
+
+
+    Shape.prototype.move = function move(x, y) {
+      // noinspection JSUnusedGlobalSymbols
+      this.x += x; // noinspection JSUnusedGlobalSymbols
+
+      this.y += y;
+      return 'Shape moved.';
+    }; // Rectangle - subclass
+
+
+    var Rectangle = function Rectangle() {
+      Shape.call(this); // call super constructor.
+    };
+
+    object_create_x_esm_res = attempt_x_esm(nativeCreate, Shape.prototype);
+    object_create_x_esm_isWorking = object_create_x_esm_res.threw === false && object_create_x_esm_res.value && object_create_x_esm_typeof(object_create_x_esm_res.value) === 'object';
+
+    if (object_create_x_esm_isWorking) {
+      // subclass extends superclass
+      Rectangle.prototype = object_create_x_esm_res.value;
+      Rectangle.prototype.constructor = Rectangle;
+      var rect = new Rectangle();
+      object_create_x_esm_isWorking = rect instanceof Rectangle;
+
+      if (object_create_x_esm_isWorking) {
+        object_create_x_esm_isWorking = rect instanceof Shape;
+      }
+
+      if (object_create_x_esm_isWorking) {
+        object_create_x_esm_isWorking = rect.move(1, 1) === 'Shape moved.';
+      }
+    }
+  }
+}
+/**
+ * This method method creates a new object with the specified prototype object and properties.
+ *
+ * @param {*} prototype - The object which should be the prototype of the newly-created object.
+ * @param {*} [properties] - If specified and not undefined, an object whose enumerable own properties
+ * (that is, those properties defined upon itself and not enumerable properties along its prototype chain)
+ * specify property descriptors to be added to the newly-created object, with the corresponding property names.
+ * @throws {TypeError} If the properties parameter isn't null or an object.
+ * @returns {boolean} A new object with the specified prototype object and properties.
+ */
+
+
+var $create;
+
+if (object_create_x_esm_isWorking) {
+  $create = nativeCreate;
+} else {
+  var object_create_x_esm_doc = typeof document !== 'undefined' && document; // Contributed by Brandon Benvie, October, 2012
+
+  var createEmpty;
+  var supportsProto = {
+    __proto__: null
+  } instanceof Object === false; // the following produces false positives
+  // in Opera Mini => not a reliable check
+  // Object.prototype.__proto__ === null
+
+  if (supportsProto || object_create_x_esm_castBoolean(object_create_x_esm_doc) === false) {
+    createEmpty = function $createEmpty() {
+      return {
+        __proto__: null
+      };
+    };
+  } else {
+    // Check for document.domain and active x support
+    // No need to use active x approach when document.domain is not set
+    // see https://github.com/es-shims/es5-shim/issues/150
+    // variation of https://github.com/kitcambridge/es5-shim/commit/4f738ac066346
+    var shouldUseActiveX = function _shouldUseActiveX() {
+      var _this = this;
+
+      // return early if document.domain not set
+      if (object_create_x_esm_castBoolean(object_create_x_esm_doc.domain) === false) {
+        return false;
+      }
+
+      var result = attempt_x_esm(function () {
+        object_create_x_esm_newArrowCheck(this, _this);
+
+        /* eslint-disable-next-line no-undef */
+        return new ActiveXObject('htmlfile');
+      }.bind(this));
+      return result.threw === false && Boolean(result.value);
+    }; // This supports IE8 when document.domain is used
+    // see https://github.com/es-shims/es5-shim/issues/150
+    // variation of https://github.com/kitcambridge/es5-shim/commit/4f738ac066346
+
+
+    var getEmptyViaActiveX = function _getEmptyViaActiveX() {
+      /* eslint-disable-next-line no-undef */
+      var xDoc = new ActiveXObject('htmlfile');
+      /* eslint-disable-next-line no-useless-escape,prettier/prettier */
+
+      xDoc.write('<script><\/script>');
+      xDoc.close(); // noinspection JSUnresolvedVariable
+
+      var empty = xDoc.parentWindow.Object.prototype;
+      xDoc = null;
+      return empty;
+    }; // The original implementation using an iframe
+    // before the activex approach was added
+    // see https://github.com/es-shims/es5-shim/issues/150
+
+
+    var getEmptyViaIFrame = function _getEmptyViaIFrame() {
+      var iframe = object_create_x_esm_doc.createElement('iframe');
+      iframe.style.display = 'none';
+      /* eslint-disable-next-line no-script-url */
+
+      iframe.src = 'javascript:';
+      var parent = object_create_x_esm_doc.body || object_create_x_esm_doc.documentElement;
+      parent.appendChild(iframe);
+      var empty = iframe.contentWindow.Object.prototype;
+      parent.removeChild(iframe);
+      iframe = null;
+      return empty;
+    }; // In old IE __proto__ can't be used to manually set `null`, nor does
+    // any other method exist to make an object that inherits from nothing,
+    // aside from Object.prototype itself. Instead, create a new global
+    // object and *steal* its Object.prototype and strip it bare. This is
+    // used as the prototype to create nullary objects.
+
+
+    createEmpty = function $createEmpty() {
+      // Determine which approach to use
+      // see https://github.com/es-shims/es5-shim/issues/150
+      var empty = shouldUseActiveX() ? getEmptyViaActiveX() : getEmptyViaIFrame();
+      delete empty.constructor;
+      delete empty.hasOwnProperty;
+      delete empty.propertyIsEnumerable;
+      delete empty.isPrototypeOf;
+      delete empty.toLocaleString;
+      delete empty.toString;
+      delete empty.valueOf;
+      /* eslint-disable-next-line lodash/prefer-noop */
+
+      var E = function Empty() {};
+
+      E.prototype = empty; // short-circuit future calls
+
+      createEmpty = function $$createEmpty() {
+        return new E();
+      };
+
+      return new E();
+    };
+  }
+
+  $create = function create(prototype, properties) {
+    var object;
+    /* eslint-disable-next-line lodash/prefer-noop */
+
+    var T = function Type() {}; // An empty constructor.
+
+
+    if (prototype === null) {
+      object = createEmpty();
+    } else {
+      if (is_primitive_default()(prototype)) {
+        // In the native implementation `parent` can be `null`
+        // OR *any* `instanceof Object`  (Object|Function|Array|RegExp|etc)
+        // Use `typeof` tho, b/c in old IE, DOM elements are not `instanceof Object`
+        // like they are in modern browsers. Using `Object.create` on DOM elements
+        // is...err...probably inappropriate, but the native version allows for it.
+        throw new TypeError('Object prototype may only be an Object or null'); // same msg as Chrome
+      }
+
+      T.prototype = prototype;
+      object = new T(); // IE has no built-in implementation of `Object.getPrototypeOf`
+      // neither `__proto__`, but this manually setting `__proto__` will
+      // guarantee that `Object.getPrototypeOf` will work as expected with
+      // objects created using `Object.create`
+
+      /* eslint-disable-next-line no-proto */
+
+      object.__proto__ = prototype;
+    }
+
+    if (typeof properties !== 'undefined') {
+      object_define_properties_x_esm(object, properties);
+    }
+
+    return object;
+  };
+}
+
+var object_create_x_esm_create = $create;
+/* harmony default export */ var object_create_x_esm = (object_create_x_esm_create);
+
+
 // CONCATENATED MODULE: ./dist/last-index-of-x.esm.js
-function last_index_of_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis !== boundThis) { throw new TypeError("Cannot instantiate an arrow function"); } }
 
 
 
@@ -1808,6 +3576,18 @@ function last_index_of_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis
 
 var nlio = [].lastIndexOf;
 var nativeLastIndexOf = typeof nlio === 'function' && nlio;
+var last_index_of_x_esm_ref = '',
+    toLowerCase = last_index_of_x_esm_ref.toLowerCase;
+var mapExtendFn = object_create_x_esm(null, {
+  samevalue: {
+    enumerable: true,
+    value: same_value_x_esm
+  },
+  samevaluezero: {
+    enumerable: true,
+    value: same_value_zero_x_esm
+  }
+});
 
 var last_index_of_x_esm_test1 = function test1() {
   var res = attempt_x_esm.call([0, 1], nativeLastIndexOf, 0, -3);
@@ -1849,26 +3629,26 @@ var last_index_of_x_esm_test6 = function test6() {
   return res.threw === false && res.value === 2;
 };
 
-var isWorking = to_boolean_x_esm(nativeLastIndexOf) && last_index_of_x_esm_test1() && last_index_of_x_esm_test2() && last_index_of_x_esm_test3() && last_index_of_x_esm_test4() && last_index_of_x_esm_test5() && last_index_of_x_esm_test6();
+var last_index_of_x_esm_isWorking = to_boolean_x_esm(nativeLastIndexOf) && last_index_of_x_esm_test1() && last_index_of_x_esm_test2() && last_index_of_x_esm_test3() && last_index_of_x_esm_test4() && last_index_of_x_esm_test5() && last_index_of_x_esm_test6();
 
 var last_index_of_x_esm_implementation = function implementation() {
   return function lastIndexOf(searchElement) {
-    /* eslint-disable-next-line babel/no-invalid-this */
     var length = to_length_x_esm(this.length);
+    /* eslint-disable-line babel/no-invalid-this */
 
     if (length < 1) {
       return -1;
     }
-    /* eslint-disable-next-line prefer-rest-params */
-
 
     var i = arguments[1];
+    /* eslint-disable-line prefer-rest-params */
 
     while (i >= 0) {
-      /* eslint-disable-next-line babel/no-invalid-this */
-      if (i in this && searchElement === this[i]) {
-        return i;
-      }
+      if (i in this && searchElement === this[i]
+      /* eslint-disable-line babel/no-invalid-this */
+      ) {
+          return i;
+        }
 
       i -= 1;
     }
@@ -1877,7 +3657,7 @@ var last_index_of_x_esm_implementation = function implementation() {
   };
 };
 
-var pLastIndexOf = isWorking ? nativeLastIndexOf : last_index_of_x_esm_implementation();
+var pLastIndexOf = last_index_of_x_esm_isWorking ? nativeLastIndexOf : last_index_of_x_esm_implementation();
 /**
  * This method returns the last index at which a given element
  * can be found in the array, or -1 if it is not present.
@@ -1903,6 +3683,74 @@ var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex
   }
 
   return -1;
+};
+
+var last_index_of_x_esm_getExtendFn = function getExtendFn(extend) {
+  return is_string_default()(extend) ? mapExtendFn[toLowerCase.call(extend)] : null;
+};
+
+var getExtendValue = function getExtendValue(args) {
+  return args.length > 2 && args.length > 3 ? args[3] : args[2];
+};
+
+var last_index_of_x_esm_runFindIndex = function runFindIndex(obj) {
+  var fromIndex = obj.fromIndex,
+      length = obj.length,
+      iterable = obj.iterable,
+      searchElement = obj.searchElement,
+      extendFn = obj.extendFn;
+  return fromIndex < length - 1 ? findLastIdxFrom(iterable, searchElement, fromIndex, extendFn) : find_last_index_x_esm(iterable, function iteratee(element, index) {
+    return index in iterable && extendFn(searchElement, element);
+  });
+};
+
+var last_index_of_x_esm_runExtendFn = function runExtendFn(obj) {
+  var length = obj.length,
+      args = obj.args,
+      iterable = obj.iterable,
+      searchElement = obj.searchElement,
+      extendFn = obj.extendFn;
+  var fromIndex = length - 1;
+
+  if (args.length > 3) {
+    fromIndex = calculate_from_index_right_x_esm(iterable, args[2]);
+
+    if (fromIndex < 0) {
+      return -1;
+    }
+
+    if (fromIndex >= length) {
+      fromIndex = length - 1;
+    }
+  }
+
+  return last_index_of_x_esm_runFindIndex({
+    fromIndex: fromIndex,
+    length: length,
+    iterable: iterable,
+    searchElement: searchElement,
+    extendFn: extendFn
+  });
+};
+
+var last_index_of_x_esm_getFromIndex = function getFromIndex(obj) {
+  var args = obj.args,
+      length = obj.length,
+      extendFn = obj.extendFn,
+      iterable = obj.iterable;
+  var fromIndex = length - 1;
+
+  if (args.length > 3 || args.length > 2 && to_boolean_x_esm(extendFn) === false) {
+    fromIndex = calculate_from_index_right_x_esm(iterable, args[2]);
+
+    if (fromIndex < 0) {
+      return -1;
+    }
+
+    fromIndex = fromIndex >= length ? length - 1 : fromIndex;
+  }
+
+  return fromIndex;
 }; // eslint-disable jsdoc/check-param-names
 // noinspection JSCommentMatchesSignature
 
@@ -1929,8 +3777,6 @@ var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex
 
 
 var last_index_of_x_esm_lastIndexOf = function lastIndexOf(array, searchElement) {
-  var _this = this;
-
   var object = to_object_x_esm(array);
   var iterable = split_if_boxed_bug_x_esm(object);
   var length = to_length_x_esm(iterable.length);
@@ -1939,63 +3785,31 @@ var last_index_of_x_esm_lastIndexOf = function lastIndexOf(array, searchElement)
     return -1;
   }
 
-  var argLength = arguments.length;
-  /* eslint-disable-next-line prefer-rest-params */
+  var extend = getExtendValue(arguments);
+  /* eslint-disable-line prefer-rest-params */
 
-  var extend = argLength > 2 && argLength > 3 ? arguments[3] : arguments[2];
-  var extendFn;
-
-  if (is_string_default()(extend)) {
-    extend = extend.toLowerCase();
-
-    if (extend === 'samevalue') {
-      extendFn = same_value_x_esm;
-    } else if (extend === 'samevaluezero') {
-      extendFn = same_value_zero_x_esm;
-    }
-  }
-
-  var fromIndex = length - 1;
+  var extendFn = last_index_of_x_esm_getExtendFn(extend);
 
   if (extendFn && (searchElement === 0 || is_nan_x_esm(searchElement))) {
-    if (argLength > 3) {
-      /* eslint-disable-next-line prefer-rest-params */
-      fromIndex = calculate_from_index_right_x_esm(iterable, arguments[2]);
-
-      if (fromIndex < 0) {
-        return -1;
-      }
-
-      if (fromIndex >= length) {
-        fromIndex = length - 1;
-      }
-    }
-
-    if (fromIndex < length - 1) {
-      return findLastIdxFrom(iterable, searchElement, fromIndex, extendFn);
-    }
-
-    return find_last_index_x_esm(iterable, function (element, index) {
-      last_index_of_x_esm_newArrowCheck(this, _this);
-
-      return index in iterable && extendFn(searchElement, element);
-    }.bind(this));
+    return last_index_of_x_esm_runExtendFn({
+      length: length,
+      args: arguments,
+      iterable: iterable,
+      searchElement: searchElement,
+      extendFn: extendFn
+    });
+    /* eslint-disable-line prefer-rest-params */
   }
 
-  if (argLength > 3 || argLength > 2 && Boolean(extendFn) === false) {
-    /* eslint-disable-next-line prefer-rest-params */
-    fromIndex = calculate_from_index_right_x_esm(iterable, arguments[2]);
+  var fromIndex = last_index_of_x_esm_getFromIndex({
+    args: arguments,
+    length: length,
+    extendFn: extendFn,
+    iterable: iterable
+  });
+  /* eslint-disable-line prefer-rest-params */
 
-    if (fromIndex < 0) {
-      return -1;
-    }
-
-    if (fromIndex >= length) {
-      fromIndex = length - 1;
-    }
-  }
-
-  return pLastIndexOf.call(iterable, searchElement, fromIndex);
+  return fromIndex < 0 ? -1 : pLastIndexOf.call(iterable, searchElement, fromIndex);
 };
 
 /* harmony default export */ var last_index_of_x_esm = __webpack_exports__["default"] = (last_index_of_x_esm_lastIndexOf);

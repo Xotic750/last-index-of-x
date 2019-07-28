@@ -56,6 +56,7 @@
     "find-last-index-x": "^3.0.9",
     "is-nan-x": "^2.0.29",
     "is-string": "^1.0.4",
+    "object-create-x": "^3.0.12",
     "same-value-x": "^2.0.28",
     "same-value-zero-x": "^2.0.28",
     "split-if-boxed-bug-x": "^2.0.22",
