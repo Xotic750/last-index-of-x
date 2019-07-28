@@ -46,10 +46,8 @@ const test3 = function test3() {
 const test4 = function test4() {
   const testArr = [];
   testArr.length = 2;
-  /* eslint-disable-next-line no-void */
-  testArr[0] = void 0;
-  /* eslint-disable-next-line no-void */
-  const res = attempt.call(testArr, nativeLastIndexOf, void 0);
+  testArr[0] = void 0; /* eslint-disable-line no-void */
+  const res = attempt.call(testArr, nativeLastIndexOf, void 0); /* eslint-disable-line no-void */
 
   return res.threw === false && res.value === 0;
 };
@@ -63,8 +61,7 @@ const test5 = function test5() {
 const test6 = function test6() {
   const res = attempt.call(
     (function getArgs() {
-      /* eslint-disable-next-line prefer-rest-params */
-      return arguments;
+      return arguments; /* eslint-disable-line prefer-rest-params */
     })('a', 'b', 'c'),
     nativeLastIndexOf,
     'c',
