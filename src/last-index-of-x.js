@@ -1,6 +1,5 @@
 import numberIsNaN from 'is-nan-x';
 import findLastIndex from 'find-last-index-x';
-import isString from 'is-string';
 import toObject from 'to-object-x';
 import toLength from 'to-length-x';
 import sameValueZero from 'same-value-zero-x';
@@ -123,7 +122,7 @@ const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromInd
 };
 
 const getExtendFn = function getExtendFn(extend) {
-  return isString(extend) ? mapExtendFn[toLowerCase.call(extend)] : null;
+  return typeof extend === 'string' ? mapExtendFn[toLowerCase.call(extend)] : null;
 };
 
 const getExtendValue = function getExtendValue(args) {

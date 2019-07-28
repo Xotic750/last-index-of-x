@@ -1,6 +1,5 @@
 import numberIsNaN from 'is-nan-x';
 import findLastIndex from 'find-last-index-x';
-import isString from 'is-string';
 import toObject from 'to-object-x';
 import toLength from 'to-length-x';
 import sameValueZero from 'same-value-zero-x';
@@ -69,10 +68,9 @@ var isWorking = toBoolean(nativeLastIndexOf) && test1() && test2() && test3() &&
 
 var implementation = function implementation() {
   return function lastIndexOf(searchElement) {
-    var length = toLength(this.length);
+    if (toLength(this.length
     /* eslint-disable-line babel/no-invalid-this */
-
-    if (length < 1) {
+    ) < 1) {
       return -1;
     }
 
@@ -122,7 +120,7 @@ var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex
 };
 
 var getExtendFn = function getExtendFn(extend) {
-  return isString(extend) ? mapExtendFn[toLowerCase.call(extend)] : null;
+  return typeof extend === 'string' ? mapExtendFn[toLowerCase.call(extend)] : null;
 };
 
 var getExtendValue = function getExtendValue(args) {
@@ -169,24 +167,30 @@ var runExtendFn = function runExtendFn(obj) {
   });
 };
 
+var conditionalFromIndex = function conditionalFromIndex(obj) {
+  var iterable = obj.iterable,
+      args = obj.args,
+      length = obj.length;
+  var fromIndex = calcFromIndexRight(iterable, args[2]);
+
+  if (fromIndex < 0) {
+    return -1;
+  }
+
+  return fromIndex >= length ? length - 1 : fromIndex;
+};
+
 var getFromIndex = function getFromIndex(obj) {
   var args = obj.args,
       length = obj.length,
       extendFn = obj.extendFn,
       iterable = obj.iterable;
-  var fromIndex = length - 1;
-
-  if (args.length > 3 || args.length > 2 && toBoolean(extendFn) === false) {
-    fromIndex = calcFromIndexRight(iterable, args[2]);
-
-    if (fromIndex < 0) {
-      return -1;
-    }
-
-    fromIndex = fromIndex >= length ? length - 1 : fromIndex;
-  }
-
-  return fromIndex;
+  var conditional = args.length > 3 || args.length > 2 && toBoolean(extendFn) === false;
+  return conditional ? conditionalFromIndex({
+    iterable: iterable,
+    args: args,
+    length: length
+  }) : length - 1;
 }; // eslint-disable jsdoc/check-param-names
 // noinspection JSCommentMatchesSignature
 

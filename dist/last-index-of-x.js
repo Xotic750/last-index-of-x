@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-2017",
-  "date": "2019-07-28T16:45:06.652Z",
+  "date": "2019-07-28T17:30:24.196Z",
   "describe": "",
   "description": "An extended ES6 lastIndexOf.",
   "file": "last-index-of-x.js",
-  "hash": "9ee8b5db004ebe241d7c",
+  "hash": "45dae90550b2722c9355",
   "license": "MIT",
   "version": "3.0.9"
 }
@@ -3573,7 +3573,6 @@ var object_create_x_esm_create = $create;
 
 
 
-
 var nlio = [].lastIndexOf;
 var nativeLastIndexOf = typeof nlio === 'function' && nlio;
 var last_index_of_x_esm_ref = '',
@@ -3633,10 +3632,9 @@ var last_index_of_x_esm_isWorking = to_boolean_x_esm(nativeLastIndexOf) && last_
 
 var last_index_of_x_esm_implementation = function implementation() {
   return function lastIndexOf(searchElement) {
-    var length = to_length_x_esm(this.length);
+    if (to_length_x_esm(this.length
     /* eslint-disable-line babel/no-invalid-this */
-
-    if (length < 1) {
+    ) < 1) {
       return -1;
     }
 
@@ -3685,8 +3683,8 @@ var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex
   return -1;
 };
 
-var last_index_of_x_esm_getExtendFn = function getExtendFn(extend) {
-  return is_string_default()(extend) ? mapExtendFn[toLowerCase.call(extend)] : null;
+var getExtendFn = function getExtendFn(extend) {
+  return typeof extend === 'string' ? mapExtendFn[toLowerCase.call(extend)] : null;
 };
 
 var getExtendValue = function getExtendValue(args) {
@@ -3733,24 +3731,30 @@ var last_index_of_x_esm_runExtendFn = function runExtendFn(obj) {
   });
 };
 
+var last_index_of_x_esm_conditionalFromIndex = function conditionalFromIndex(obj) {
+  var iterable = obj.iterable,
+      args = obj.args,
+      length = obj.length;
+  var fromIndex = calculate_from_index_right_x_esm(iterable, args[2]);
+
+  if (fromIndex < 0) {
+    return -1;
+  }
+
+  return fromIndex >= length ? length - 1 : fromIndex;
+};
+
 var last_index_of_x_esm_getFromIndex = function getFromIndex(obj) {
   var args = obj.args,
       length = obj.length,
       extendFn = obj.extendFn,
       iterable = obj.iterable;
-  var fromIndex = length - 1;
-
-  if (args.length > 3 || args.length > 2 && to_boolean_x_esm(extendFn) === false) {
-    fromIndex = calculate_from_index_right_x_esm(iterable, args[2]);
-
-    if (fromIndex < 0) {
-      return -1;
-    }
-
-    fromIndex = fromIndex >= length ? length - 1 : fromIndex;
-  }
-
-  return fromIndex;
+  var conditional = args.length > 3 || args.length > 2 && to_boolean_x_esm(extendFn) === false;
+  return conditional ? last_index_of_x_esm_conditionalFromIndex({
+    iterable: iterable,
+    args: args,
+    length: length
+  }) : length - 1;
 }; // eslint-disable jsdoc/check-param-names
 // noinspection JSCommentMatchesSignature
 
@@ -3788,7 +3792,7 @@ var last_index_of_x_esm_lastIndexOf = function lastIndexOf(array, searchElement)
   var extend = getExtendValue(arguments);
   /* eslint-disable-line prefer-rest-params */
 
-  var extendFn = last_index_of_x_esm_getExtendFn(extend);
+  var extendFn = getExtendFn(extend);
 
   if (extendFn && (searchElement === 0 || is_nan_x_esm(searchElement))) {
     return last_index_of_x_esm_runExtendFn({
