@@ -59,6 +59,7 @@
     "same-value-x": "^2.0.28",
     "same-value-zero-x": "^2.0.28",
     "split-if-boxed-bug-x": "^2.0.22",
+    "to-boolean-x": "^2.0.24",
     "to-length-x": "^4.0.25",
     "to-object-x": "^2.0.20"
   },

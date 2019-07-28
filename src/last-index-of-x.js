@@ -8,55 +8,63 @@ import sameValue from 'same-value-x';
 import calcFromIndexRight from 'calculate-from-index-right-x';
 import splitIfBoxedBug from 'split-if-boxed-bug-x';
 import attempt from 'attempt-x';
+import toBoolean from 'to-boolean-x';
 
-let pLastIndexOf = typeof Array.prototype.lastIndexOf === 'function' && Array.prototype.lastIndexOf;
+const nlio = [].lastIndexOf;
+const nativeLastIndexOf = typeof nlio === 'function' && nlio;
 
-let isWorking;
+const test1 = function test1() {
+  const res = attempt.call([0, 1], nativeLastIndexOf, 0, -3);
 
-if (pLastIndexOf) {
-  let res = attempt.call([0, 1], pLastIndexOf, 0, -3);
-  isWorking = res.threw === false && res.value === -1;
+  return res.threw === false && res.value === -1;
+};
 
-  if (isWorking) {
-    res = attempt.call([0, 1, 0], pLastIndexOf, 0);
-    isWorking = res.threw === false && res.value === 2;
-  }
+const test2 = function test2() {
+  const res = attempt.call([0, 1, 0], nativeLastIndexOf, 0);
 
-  if (isWorking) {
-    res = attempt.call([0, -0], pLastIndexOf, 0);
-    isWorking = res.threw === false && res.value === 1;
-  }
+  return res.threw === false && res.value === 2;
+};
 
-  if (isWorking) {
-    const testArr = [];
-    testArr.length = 2;
-    /* eslint-disable-next-line no-void */
-    testArr[0] = void 0;
-    /* eslint-disable-next-line no-void */
-    res = attempt.call(testArr, pLastIndexOf, void 0);
-    isWorking = res.threw === false && res.value === 0;
-  }
+const test3 = function test3() {
+  const res = attempt.call([0, -0], nativeLastIndexOf, 0);
 
-  if (isWorking) {
-    res = attempt.call('abc', pLastIndexOf, 'c');
-    isWorking = res.threw === false && res.value === 2;
-  }
+  return res.threw === false && res.value === 1;
+};
 
-  if (isWorking) {
-    res = attempt.call(
-      (function getArgs() {
-        /* eslint-disable-next-line prefer-rest-params */
-        return arguments;
-      })('a', 'b', 'c'),
-      pLastIndexOf,
-      'c',
-    );
-    isWorking = res.threw === false && res.value === 2;
-  }
-}
+const test4 = function test4() {
+  const testArr = [];
+  testArr.length = 2;
+  /* eslint-disable-next-line no-void */
+  testArr[0] = void 0;
+  /* eslint-disable-next-line no-void */
+  const res = attempt.call(testArr, nativeLastIndexOf, void 0);
 
-if (isWorking !== true) {
-  pLastIndexOf = function lastIndexOf(searchElement) {
+  return res.threw === false && res.value === 0;
+};
+
+const test5 = function test5() {
+  const res = attempt.call('abc', nativeLastIndexOf, 'c');
+
+  return res.threw === false && res.value === 2;
+};
+
+const test6 = function test6() {
+  const res = attempt.call(
+    (function getArgs() {
+      /* eslint-disable-next-line prefer-rest-params */
+      return arguments;
+    })('a', 'b', 'c'),
+    nativeLastIndexOf,
+    'c',
+  );
+
+  return res.threw === false && res.value === 2;
+};
+
+const isWorking = toBoolean(nativeLastIndexOf) && test1() && test2() && test3() && test4() && test5() && test6();
+
+const implementation = function implementation() {
+  return function lastIndexOf(searchElement) {
     /* eslint-disable-next-line babel/no-invalid-this */
     const length = toLength(this.length);
 
@@ -77,7 +85,9 @@ if (isWorking !== true) {
 
     return -1;
   };
-}
+};
+
+const pLastIndexOf = isWorking ? nativeLastIndexOf : implementation();
 
 /**
  * This method returns the last index at which a given element

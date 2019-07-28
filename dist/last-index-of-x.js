@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-2017",
-  "date": "2019-07-27T22:23:43.342Z",
+  "date": "2019-07-28T15:51:18.521Z",
   "describe": "",
   "description": "An extended ES6 lastIndexOf.",
   "file": "last-index-of-x.js",
-  "hash": "8b5498936787f4899540",
+  "hash": "a98a540f95af9bf22411",
   "license": "MIT",
   "version": "3.0.9"
 }
@@ -1805,51 +1805,54 @@ function last_index_of_x_esm_newArrowCheck(innerThis, boundThis) { if (innerThis
 
 
 
-var pLastIndexOf = typeof Array.prototype.lastIndexOf === 'function' && Array.prototype.lastIndexOf;
-var isWorking;
 
-if (pLastIndexOf) {
-  var res = attempt_x_esm.call([0, 1], pLastIndexOf, 0, -3);
-  isWorking = res.threw === false && res.value === -1;
+var nlio = [].lastIndexOf;
+var nativeLastIndexOf = typeof nlio === 'function' && nlio;
 
-  if (isWorking) {
-    res = attempt_x_esm.call([0, 1, 0], pLastIndexOf, 0);
-    isWorking = res.threw === false && res.value === 2;
-  }
+var last_index_of_x_esm_test1 = function test1() {
+  var res = attempt_x_esm.call([0, 1], nativeLastIndexOf, 0, -3);
+  return res.threw === false && res.value === -1;
+};
 
-  if (isWorking) {
-    res = attempt_x_esm.call([0, -0], pLastIndexOf, 0);
-    isWorking = res.threw === false && res.value === 1;
-  }
+var last_index_of_x_esm_test2 = function test2() {
+  var res = attempt_x_esm.call([0, 1, 0], nativeLastIndexOf, 0);
+  return res.threw === false && res.value === 2;
+};
 
-  if (isWorking) {
-    var testArr = [];
-    testArr.length = 2;
-    /* eslint-disable-next-line no-void */
+var last_index_of_x_esm_test3 = function test3() {
+  var res = attempt_x_esm.call([0, -0], nativeLastIndexOf, 0);
+  return res.threw === false && res.value === 1;
+};
 
-    testArr[0] = void 0;
-    /* eslint-disable-next-line no-void */
+var last_index_of_x_esm_test4 = function test4() {
+  var testArr = [];
+  testArr.length = 2;
+  /* eslint-disable-next-line no-void */
 
-    res = attempt_x_esm.call(testArr, pLastIndexOf, void 0);
-    isWorking = res.threw === false && res.value === 0;
-  }
+  testArr[0] = void 0;
+  /* eslint-disable-next-line no-void */
 
-  if (isWorking) {
-    res = attempt_x_esm.call('abc', pLastIndexOf, 'c');
-    isWorking = res.threw === false && res.value === 2;
-  }
+  var res = attempt_x_esm.call(testArr, nativeLastIndexOf, void 0);
+  return res.threw === false && res.value === 0;
+};
 
-  if (isWorking) {
-    res = attempt_x_esm.call(function getArgs() {
-      /* eslint-disable-next-line prefer-rest-params */
-      return arguments;
-    }('a', 'b', 'c'), pLastIndexOf, 'c');
-    isWorking = res.threw === false && res.value === 2;
-  }
-}
+var last_index_of_x_esm_test5 = function test5() {
+  var res = attempt_x_esm.call('abc', nativeLastIndexOf, 'c');
+  return res.threw === false && res.value === 2;
+};
 
-if (isWorking !== true) {
-  pLastIndexOf = function lastIndexOf(searchElement) {
+var last_index_of_x_esm_test6 = function test6() {
+  var res = attempt_x_esm.call(function getArgs() {
+    /* eslint-disable-next-line prefer-rest-params */
+    return arguments;
+  }('a', 'b', 'c'), nativeLastIndexOf, 'c');
+  return res.threw === false && res.value === 2;
+};
+
+var isWorking = to_boolean_x_esm(nativeLastIndexOf) && last_index_of_x_esm_test1() && last_index_of_x_esm_test2() && last_index_of_x_esm_test3() && last_index_of_x_esm_test4() && last_index_of_x_esm_test5() && last_index_of_x_esm_test6();
+
+var last_index_of_x_esm_implementation = function implementation() {
+  return function lastIndexOf(searchElement) {
     /* eslint-disable-next-line babel/no-invalid-this */
     var length = to_length_x_esm(this.length);
 
@@ -1872,7 +1875,9 @@ if (isWorking !== true) {
 
     return -1;
   };
-}
+};
+
+var pLastIndexOf = isWorking ? nativeLastIndexOf : last_index_of_x_esm_implementation();
 /**
  * This method returns the last index at which a given element
  * can be found in the array, or -1 if it is not present.
@@ -1885,7 +1890,6 @@ if (isWorking !== true) {
  * @param {Function} extendFn - The comparison function to use.
  * @returns {number} Returns index of found element, otherwise -1.
  */
-
 
 var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex, extendFn) {
   var fIdx = fromIndex;

@@ -10,51 +10,54 @@ import sameValue from 'same-value-x';
 import calcFromIndexRight from 'calculate-from-index-right-x';
 import splitIfBoxedBug from 'split-if-boxed-bug-x';
 import attempt from 'attempt-x';
-var pLastIndexOf = typeof Array.prototype.lastIndexOf === 'function' && Array.prototype.lastIndexOf;
-var isWorking;
+import toBoolean from 'to-boolean-x';
+var nlio = [].lastIndexOf;
+var nativeLastIndexOf = typeof nlio === 'function' && nlio;
 
-if (pLastIndexOf) {
-  var res = attempt.call([0, 1], pLastIndexOf, 0, -3);
-  isWorking = res.threw === false && res.value === -1;
+var test1 = function test1() {
+  var res = attempt.call([0, 1], nativeLastIndexOf, 0, -3);
+  return res.threw === false && res.value === -1;
+};
 
-  if (isWorking) {
-    res = attempt.call([0, 1, 0], pLastIndexOf, 0);
-    isWorking = res.threw === false && res.value === 2;
-  }
+var test2 = function test2() {
+  var res = attempt.call([0, 1, 0], nativeLastIndexOf, 0);
+  return res.threw === false && res.value === 2;
+};
 
-  if (isWorking) {
-    res = attempt.call([0, -0], pLastIndexOf, 0);
-    isWorking = res.threw === false && res.value === 1;
-  }
+var test3 = function test3() {
+  var res = attempt.call([0, -0], nativeLastIndexOf, 0);
+  return res.threw === false && res.value === 1;
+};
 
-  if (isWorking) {
-    var testArr = [];
-    testArr.length = 2;
-    /* eslint-disable-next-line no-void */
+var test4 = function test4() {
+  var testArr = [];
+  testArr.length = 2;
+  /* eslint-disable-next-line no-void */
 
-    testArr[0] = void 0;
-    /* eslint-disable-next-line no-void */
+  testArr[0] = void 0;
+  /* eslint-disable-next-line no-void */
 
-    res = attempt.call(testArr, pLastIndexOf, void 0);
-    isWorking = res.threw === false && res.value === 0;
-  }
+  var res = attempt.call(testArr, nativeLastIndexOf, void 0);
+  return res.threw === false && res.value === 0;
+};
 
-  if (isWorking) {
-    res = attempt.call('abc', pLastIndexOf, 'c');
-    isWorking = res.threw === false && res.value === 2;
-  }
+var test5 = function test5() {
+  var res = attempt.call('abc', nativeLastIndexOf, 'c');
+  return res.threw === false && res.value === 2;
+};
 
-  if (isWorking) {
-    res = attempt.call(function getArgs() {
-      /* eslint-disable-next-line prefer-rest-params */
-      return arguments;
-    }('a', 'b', 'c'), pLastIndexOf, 'c');
-    isWorking = res.threw === false && res.value === 2;
-  }
-}
+var test6 = function test6() {
+  var res = attempt.call(function getArgs() {
+    /* eslint-disable-next-line prefer-rest-params */
+    return arguments;
+  }('a', 'b', 'c'), nativeLastIndexOf, 'c');
+  return res.threw === false && res.value === 2;
+};
 
-if (isWorking !== true) {
-  pLastIndexOf = function lastIndexOf(searchElement) {
+var isWorking = toBoolean(nativeLastIndexOf) && test1() && test2() && test3() && test4() && test5() && test6();
+
+var implementation = function implementation() {
+  return function lastIndexOf(searchElement) {
     /* eslint-disable-next-line babel/no-invalid-this */
     var length = toLength(this.length);
 
@@ -77,7 +80,9 @@ if (isWorking !== true) {
 
     return -1;
   };
-}
+};
+
+var pLastIndexOf = isWorking ? nativeLastIndexOf : implementation();
 /**
  * This method returns the last index at which a given element
  * can be found in the array, or -1 if it is not present.
@@ -90,7 +95,6 @@ if (isWorking !== true) {
  * @param {Function} extendFn - The comparison function to use.
  * @returns {number} Returns index of found element, otherwise -1.
  */
-
 
 var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex, extendFn) {
   var fIdx = fromIndex;
