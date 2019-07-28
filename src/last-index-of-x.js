@@ -114,6 +114,22 @@ const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromInd
   return -1;
 };
 
+const getExtend = function getExtend(extend) {
+  if (isString(extend)) {
+    const extendLower = extend.toLowerCase();
+
+    if (extendLower === 'samevalue') {
+      return sameValue;
+    }
+
+    if (extendLower === 'samevaluezero') {
+      return sameValueZero;
+    }
+  }
+
+  return null;
+};
+
 // eslint-disable jsdoc/check-param-names
 // noinspection JSCommentMatchesSignature
 /**
@@ -147,18 +163,8 @@ const lastIndexOf = function lastIndexOf(array, searchElement) {
 
   const argLength = arguments.length;
   /* eslint-disable-next-line prefer-rest-params */
-  let extend = argLength > 2 && argLength > 3 ? arguments[3] : arguments[2];
-  let extendFn;
-
-  if (isString(extend)) {
-    extend = extend.toLowerCase();
-
-    if (extend === 'samevalue') {
-      extendFn = sameValue;
-    } else if (extend === 'samevaluezero') {
-      extendFn = sameValueZero;
-    }
-  }
+  const extend = argLength > 2 && argLength > 3 ? arguments[3] : arguments[2];
+  const extendFn = getExtend(extend);
 
   let fromIndex = length - 1;
 
@@ -180,12 +186,12 @@ const lastIndexOf = function lastIndexOf(array, searchElement) {
       return findLastIdxFrom(iterable, searchElement, fromIndex, extendFn);
     }
 
-    return findLastIndex(iterable, (element, index) => {
+    return findLastIndex(iterable, function iteratee(element, index) {
       return index in iterable && extendFn(searchElement, element);
     });
   }
 
-  if (argLength > 3 || (argLength > 2 && Boolean(extendFn) === false)) {
+  if (argLength > 3 || (argLength > 2 && toBoolean(extendFn) === false)) {
     /* eslint-disable-next-line prefer-rest-params */
     fromIndex = calcFromIndexRight(iterable, arguments[2]);
 
