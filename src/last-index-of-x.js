@@ -78,9 +78,7 @@ const isWorking = toBoolean(nativeLastIndexOf) && test1() && test2() && test3() 
 
 const implementation = function implementation() {
   return function lastIndexOf(searchElement) {
-    const length = toLength(this.length); /* eslint-disable-line babel/no-invalid-this */
-
-    if (length < 1) {
+    if (toLength(this.length /* eslint-disable-line babel/no-invalid-this */) < 1) {
       return -1;
     }
 
