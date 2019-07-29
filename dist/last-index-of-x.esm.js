@@ -42,12 +42,12 @@ var test3 = function test3() {
 var test4 = function test4() {
   var testArr = [];
   testArr.length = 2;
-  /* eslint-disable-next-line no-void */
-
   testArr[0] = void 0;
-  /* eslint-disable-next-line no-void */
+  /* eslint-disable-line no-void */
 
   var res = attempt.call(testArr, nativeLastIndexOf, void 0);
+  /* eslint-disable-line no-void */
+
   return res.threw === false && res.value === 0;
 };
 
@@ -58,8 +58,8 @@ var test5 = function test5() {
 
 var test6 = function test6() {
   var res = attempt.call(function getArgs() {
-    /* eslint-disable-next-line prefer-rest-params */
     return arguments;
+    /* eslint-disable-line prefer-rest-params */
   }('a', 'b', 'c'), nativeLastIndexOf, 'c');
   return res.threw === false && res.value === 2;
 };

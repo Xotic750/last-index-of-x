@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-2017",
-  "date": "2019-07-28T17:30:24.196Z",
+  "date": "2019-07-29T20:26:56.259Z",
   "describe": "",
   "description": "An extended ES6 lastIndexOf.",
   "file": "last-index-of-x.js",
-  "hash": "45dae90550b2722c9355",
+  "hash": "6504ebd074a531583774",
   "license": "MIT",
   "version": "3.0.9"
 }
@@ -3606,12 +3606,12 @@ var last_index_of_x_esm_test3 = function test3() {
 var last_index_of_x_esm_test4 = function test4() {
   var testArr = [];
   testArr.length = 2;
-  /* eslint-disable-next-line no-void */
-
   testArr[0] = void 0;
-  /* eslint-disable-next-line no-void */
+  /* eslint-disable-line no-void */
 
   var res = attempt_x_esm.call(testArr, nativeLastIndexOf, void 0);
+  /* eslint-disable-line no-void */
+
   return res.threw === false && res.value === 0;
 };
 
@@ -3622,8 +3622,8 @@ var last_index_of_x_esm_test5 = function test5() {
 
 var last_index_of_x_esm_test6 = function test6() {
   var res = attempt_x_esm.call(function getArgs() {
-    /* eslint-disable-next-line prefer-rest-params */
     return arguments;
+    /* eslint-disable-line prefer-rest-params */
   }('a', 'b', 'c'), nativeLastIndexOf, 'c');
   return res.threw === false && res.value === 2;
 };
