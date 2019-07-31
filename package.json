@@ -1,6 +1,6 @@
 {
   "name": "last-index-of-x",
-  "version": "3.0.9",
+  "version": "3.0.10",
   "description": "An extended ES6 lastIndexOf.",
   "homepage": "https://github.com/Xotic750/last-index-of-x",
   "author": {
@@ -51,17 +51,17 @@
     "url": "https://github.com/Xotic750/last-index-of-x/issues"
   },
   "dependencies": {
-    "attempt-x": "^2.0.22",
-    "calculate-from-index-right-x": "^3.0.9",
-    "find-last-index-x": "^3.0.9",
-    "is-nan-x": "^2.0.29",
-    "object-create-x": "^3.0.12",
-    "same-value-x": "^2.0.28",
-    "same-value-zero-x": "^2.0.28",
-    "split-if-boxed-bug-x": "^2.0.22",
-    "to-boolean-x": "^2.0.24",
-    "to-length-x": "^4.0.25",
-    "to-object-x": "^2.0.20"
+    "attempt-x": "^2.0.23",
+    "calculate-from-index-right-x": "^3.0.10",
+    "find-last-index-x": "^3.0.10",
+    "is-nan-x": "^2.0.30",
+    "object-create-x": "^3.0.13",
+    "same-value-x": "^2.0.29",
+    "same-value-zero-x": "^2.0.29",
+    "split-if-boxed-bug-x": "^2.0.23",
+    "to-boolean-x": "^2.0.25",
+    "to-length-x": "^4.0.26",
+    "to-object-x": "^2.0.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -73,7 +73,7 @@
     "@babel/runtime": "^7.5.5",
     "@types/jest": "^24.0.16",
     "@types/node": "^12.6.8",
-    "@xotic750/eslint-config-recommended": "^1.0.4",
+    "@xotic750/eslint-config-recommended": "^1.0.5",
     "babel-core": "^7.0.0-0",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
