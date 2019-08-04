@@ -2,7 +2,7 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-2017",
-  "date": "2019-08-04T16:00:42.156Z",
+  "date": "2019-08-04T23:51:48.380Z",
   "describe": "",
   "description": "An extended ES6 lastIndexOf.",
   "file": "last-index-of-x.js",
