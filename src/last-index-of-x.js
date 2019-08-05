@@ -72,27 +72,27 @@ const test6 = function test6() {
 
 const isWorking = toBoolean(nativeLastIndexOf) && test1() && test2() && test3() && test4() && test5() && test6();
 
-const implementation = function implementation() {
-  return function lastIndexOf(searchElement) {
-    if (toLength(this.length /* eslint-disable-line babel/no-invalid-this */) < 1) {
-      return -1;
-    }
-
-    let i = arguments[1]; /* eslint-disable-line prefer-rest-params */
-    while (i >= 0) {
-      if (i in this && searchElement === this[i] /* eslint-disable-line babel/no-invalid-this */) {
-        return i;
-      }
-
-      i -= 1;
-    }
-
+const implementation = function lastIndexOf(searchElement) {
+  if (toLength(this.length /* eslint-disable-line babel/no-invalid-this */) < 1) {
     return -1;
-  };
+  }
+
+  let i = arguments[1]; /* eslint-disable-line prefer-rest-params */
+  while (i >= 0) {
+    if (i in this && searchElement === this[i] /* eslint-disable-line babel/no-invalid-this */) {
+      return i;
+    }
+
+    i -= 1;
+  }
+
+  return -1;
 };
 
-const pLastIndexOf = isWorking ? nativeLastIndexOf : implementation();
+const pLastIndexOf = isWorking ? nativeLastIndexOf : implementation;
 
+// eslint-disable jsdoc/check-param-names
+// noinspection JSCommentMatchesSignature
 /**
  * This method returns the last index at which a given element
  * can be found in the array, or -1 if it is not present.
@@ -105,7 +105,9 @@ const pLastIndexOf = isWorking ? nativeLastIndexOf : implementation();
  * @param {Function} extendFn - The comparison function to use.
  * @returns {number} Returns index of found element, otherwise -1.
  */
-const findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex, extendFn) {
+// eslint-enable jsdoc/check-param-names
+const findLastIdxFrom = function findLastIndexFrom(args) {
+  const [array, searchElement, fromIndex, extendFn] = args;
   let fIdx = fromIndex;
   while (fIdx >= 0) {
     if (fIdx in array && extendFn(array[fIdx], searchElement)) {
@@ -130,7 +132,7 @@ const runFindIndex = function runFindIndex(obj) {
   const {fromIndex, length, iterable, searchElement, extendFn} = obj;
 
   return fromIndex < length - 1
-    ? findLastIdxFrom(iterable, searchElement, fromIndex, extendFn)
+    ? findLastIdxFrom([iterable, searchElement, fromIndex, extendFn])
     : findLastIndex(iterable, function iteratee(element, index) {
         return index in iterable && extendFn(searchElement, element);
       });

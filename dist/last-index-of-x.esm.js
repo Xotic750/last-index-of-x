@@ -1,3 +1,11 @@
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 import numberIsNaN from 'is-nan-x';
 import findLastIndex from 'find-last-index-x';
 import toObject from 'to-object-x';
@@ -66,32 +74,32 @@ var test6 = function test6() {
 
 var isWorking = toBoolean(nativeLastIndexOf) && test1() && test2() && test3() && test4() && test5() && test6();
 
-var implementation = function implementation() {
-  return function lastIndexOf(searchElement) {
-    if (toLength(this.length
-    /* eslint-disable-line babel/no-invalid-this */
-    ) < 1) {
-      return -1;
-    }
-
-    var i = arguments[1];
-    /* eslint-disable-line prefer-rest-params */
-
-    while (i >= 0) {
-      if (i in this && searchElement === this[i]
-      /* eslint-disable-line babel/no-invalid-this */
-      ) {
-          return i;
-        }
-
-      i -= 1;
-    }
-
+var implementation = function lastIndexOf(searchElement) {
+  if (toLength(this.length
+  /* eslint-disable-line babel/no-invalid-this */
+  ) < 1) {
     return -1;
-  };
+  }
+
+  var i = arguments[1];
+  /* eslint-disable-line prefer-rest-params */
+
+  while (i >= 0) {
+    if (i in this && searchElement === this[i]
+    /* eslint-disable-line babel/no-invalid-this */
+    ) {
+        return i;
+      }
+
+    i -= 1;
+  }
+
+  return -1;
 };
 
-var pLastIndexOf = isWorking ? nativeLastIndexOf : implementation();
+var pLastIndexOf = isWorking ? nativeLastIndexOf : implementation; // eslint-disable jsdoc/check-param-names
+// noinspection JSCommentMatchesSignature
+
 /**
  * This method returns the last index at which a given element
  * can be found in the array, or -1 if it is not present.
@@ -104,8 +112,15 @@ var pLastIndexOf = isWorking ? nativeLastIndexOf : implementation();
  * @param {Function} extendFn - The comparison function to use.
  * @returns {number} Returns index of found element, otherwise -1.
  */
+// eslint-enable jsdoc/check-param-names
 
-var findLastIdxFrom = function findLastIndexFrom(array, searchElement, fromIndex, extendFn) {
+var findLastIdxFrom = function findLastIndexFrom(args) {
+  var _args = _slicedToArray(args, 4),
+      array = _args[0],
+      searchElement = _args[1],
+      fromIndex = _args[2],
+      extendFn = _args[3];
+
   var fIdx = fromIndex;
 
   while (fIdx >= 0) {
@@ -133,7 +148,7 @@ var runFindIndex = function runFindIndex(obj) {
       iterable = obj.iterable,
       searchElement = obj.searchElement,
       extendFn = obj.extendFn;
-  return fromIndex < length - 1 ? findLastIdxFrom(iterable, searchElement, fromIndex, extendFn) : findLastIndex(iterable, function iteratee(element, index) {
+  return fromIndex < length - 1 ? findLastIdxFrom([iterable, searchElement, fromIndex, extendFn]) : findLastIndex(iterable, function iteratee(element, index) {
     return index in iterable && extendFn(searchElement, element);
   });
 };
