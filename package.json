@@ -59,8 +59,10 @@
     "object-create-x": "^3.1.0",
     "same-value-x": "^2.1.0",
     "same-value-zero-x": "^2.1.0",
+    "simple-methodize-x": "^1.0.2",
     "split-if-boxed-bug-x": "^2.1.0",
     "to-boolean-x": "^2.1.0",
+    "to-integer-x": "^4.2.0",
     "to-length-x": "^4.2.0",
     "to-object-x": "^2.2.0"
   },

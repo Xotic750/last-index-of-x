@@ -9,11 +9,13 @@ import splitIfBoxedBug from 'split-if-boxed-bug-x';
 import attempt from 'attempt-x';
 import toBoolean from 'to-boolean-x';
 import objectCreate from 'object-create-x';
+import methodize from 'simple-methodize-x';
+import toInteger from 'to-integer-x';
 
 const nlio = [].lastIndexOf;
-const nativeLastIndexOf = typeof nlio === 'function' && nlio;
-const {toLowerCase} = '';
-
+const nativeLastIndexOf = typeof nlio === 'function' && methodize(nlio);
+const toLowerCase = methodize(''.toLowerCase);
+const {min: mathMin, abs: mathAbs} = Math;
 const mapExtendFn = objectCreate(null, {
   samevalue: {
     enumerable: true,
@@ -26,19 +28,19 @@ const mapExtendFn = objectCreate(null, {
 });
 
 const test1 = function test1() {
-  const res = attempt.call([0, 1], nativeLastIndexOf, 0, -3);
+  const res = attempt(nativeLastIndexOf, [0, 1], 0, -3);
 
   return res.threw === false && res.value === -1;
 };
 
 const test2 = function test2() {
-  const res = attempt.call([0, 1, 0], nativeLastIndexOf, 0);
+  const res = attempt(nativeLastIndexOf, [0, 1, 0], 0);
 
   return res.threw === false && res.value === 2;
 };
 
 const test3 = function test3() {
-  const res = attempt.call([0, -0], nativeLastIndexOf, 0);
+  const res = attempt(nativeLastIndexOf, [0, -0], 0);
 
   return res.threw === false && res.value === 1;
 };
@@ -47,43 +49,52 @@ const test4 = function test4() {
   const testArr = [];
   testArr.length = 2;
   testArr[0] = void 0; /* eslint-disable-line no-void */
-  const res = attempt.call(testArr, nativeLastIndexOf, void 0); /* eslint-disable-line no-void */
+  const res = attempt(nativeLastIndexOf, testArr, void 0); /* eslint-disable-line no-void */
 
   return res.threw === false && res.value === 0;
 };
 
 const test5 = function test5() {
-  const res = attempt.call('abc', nativeLastIndexOf, 'c');
+  const res = attempt(nativeLastIndexOf, 'abc', 'c');
 
   return res.threw === false && res.value === 2;
 };
 
 const test6 = function test6() {
-  const res = attempt.call(
-    (function getArgs() {
-      return arguments; /* eslint-disable-line prefer-rest-params */
-    })('a', 'b', 'c'),
-    nativeLastIndexOf,
-    'c',
-  );
+  const args = (function getArgs() {
+    return arguments; /* eslint-disable-line prefer-rest-params */
+  })('a', 'b', 'c');
+
+  const res = attempt(nativeLastIndexOf, args, 'c');
 
   return res.threw === false && res.value === 2;
 };
 
 const isWorking = toBoolean(nativeLastIndexOf) && test1() && test2() && test3() && test4() && test5() && test6();
 
-const implementation = function lastIndexOf(searchElement) {
-  if (toLength(this.length /* eslint-disable-line babel/no-invalid-this */) < 1) {
+export const implementation = function lastIndexOf(array, searchElement) {
+  const object = toObject(array);
+  // If no callback function or if callback is not a callable function
+  const iterable = splitIfBoxedBug(object);
+  const length = toLength(iterable.length);
+
+  if (length === 0) {
     return -1;
   }
 
-  let i = arguments[1]; /* eslint-disable-line prefer-rest-params */
-  while (i >= 0) {
-    if (i in this && searchElement === this[i] /* eslint-disable-line babel/no-invalid-this */) {
+  let i = length - 1;
+
+  if (arguments.length > 2) {
+    /* eslint-disable-next-line prefer-rest-params */
+    i = mathMin(i, toInteger(arguments[2]));
+  }
+
+  // handle negative indices
+  i = i >= 0 ? i : length - mathAbs(i);
+  for (; i >= 0; i -= 1) {
+    if (i in iterable && searchElement === iterable[i]) {
       return i;
     }
-
-    i -= 1;
   }
 
   return -1;
@@ -121,7 +132,7 @@ const findLastIdxFrom = function findLastIndexFrom(args) {
 };
 
 const getExtendFn = function getExtendFn(extend) {
-  return typeof extend === 'string' ? mapExtendFn[toLowerCase.call(extend)] : null;
+  return typeof extend === 'string' ? mapExtendFn[toLowerCase(extend)] : null;
 };
 
 const getExtendValue = function getExtendValue(args) {
@@ -215,7 +226,7 @@ const lastIndexOf = function lastIndexOf(array, searchElement) {
 
   const fromIndex = getFromIndex({args: arguments, length, extendFn, iterable}); /* eslint-disable-line prefer-rest-params */
 
-  return fromIndex < 0 ? -1 : pLastIndexOf.call(iterable, searchElement, fromIndex);
+  return fromIndex < 0 ? -1 : pLastIndexOf(iterable, searchElement, fromIndex);
 };
 
 export default lastIndexOf;
