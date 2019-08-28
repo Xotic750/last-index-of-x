@@ -1,6 +1,6 @@
 {
   "name": "last-index-of-x",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "An extended ES6 lastIndexOf.",
   "homepage": "https://github.com/Xotic750/last-index-of-x",
   "author": {
@@ -52,19 +52,19 @@
     "url": "https://github.com/Xotic750/last-index-of-x/issues"
   },
   "dependencies": {
-    "attempt-x": "^2.1.1",
-    "calculate-from-index-right-x": "^3.1.1",
-    "find-last-index-x": "^3.1.1",
-    "is-nan-x": "^2.1.0",
-    "object-create-x": "^3.1.1",
-    "same-value-x": "^2.1.0",
-    "same-value-zero-x": "^2.1.0",
-    "simple-methodize-x": "^1.0.3",
-    "split-if-boxed-bug-x": "^2.1.1",
-    "to-boolean-x": "^2.1.0",
-    "to-integer-x": "^4.2.1",
-    "to-length-x": "^4.2.1",
-    "to-object-x": "^2.2.0"
+    "attempt-x": "^2.1.2",
+    "calculate-from-index-right-x": "^3.1.2",
+    "find-last-index-x": "^3.1.2",
+    "is-nan-x": "^2.1.1",
+    "object-create-x": "^3.1.2",
+    "same-value-x": "^2.1.1",
+    "same-value-zero-x": "^2.1.1",
+    "simple-methodize-x": "^1.0.4",
+    "split-if-boxed-bug-x": "^2.1.2",
+    "to-boolean-x": "^2.1.1",
+    "to-integer-x": "^4.2.2",
+    "to-length-x": "^4.2.2",
+    "to-object-x": "^2.2.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
