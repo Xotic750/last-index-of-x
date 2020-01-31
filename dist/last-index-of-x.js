@@ -2,11 +2,11 @@
 {
   "author": "Graham Fairweather",
   "copywrite": "Copyright (c) 2015-2017",
-  "date": "2019-09-05T20:52:53.275Z",
+  "date": "2020-01-31T12:01:21.398Z",
   "describe": "",
   "description": "An extended ES6 lastIndexOf.",
   "file": "last-index-of-x.js",
-  "hash": "9bb2dd4a3f4b6f8c6ba1",
+  "hash": "1f73b30d1f3cec1c5e10",
   "license": "MIT",
   "version": "3.1.2"
 }
@@ -4111,7 +4111,7 @@ function last_index_of_x_esm_slicedToArray(arr, i) { return last_index_of_x_esm_
 
 function last_index_of_x_esm_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
-function last_index_of_x_esm_iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+function last_index_of_x_esm_iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
 function last_index_of_x_esm_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -4227,6 +4227,7 @@ var pLastIndexOf = last_index_of_x_esm_isWorking ? nativeLastIndexOf : last_inde
  * @param {Array} array - The array to search.
  * @param {*} searchElement - Element to locate in the array.
  * @param {number} fromIndex - The index at which to start searching backwards.
+ * @param args
  * @param {Function} extendFn - The comparison function to use.
  * @returns {number} Returns index of found element, otherwise -1.
  */

@@ -113,6 +113,7 @@ const pLastIndexOf = isWorking ? nativeLastIndexOf : implementation;
  * @param {Array} array - The array to search.
  * @param {*} searchElement - Element to locate in the array.
  * @param {number} fromIndex - The index at which to start searching backwards.
+ * @param args
  * @param {Function} extendFn - The comparison function to use.
  * @returns {number} Returns index of found element, otherwise -1.
  */
